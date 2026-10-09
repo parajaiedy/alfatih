@@ -32,6 +32,10 @@ ANGKA = ["nol","satu","dua","tiga","empat","lima","enam","tujuh","delapan","semb
  "delapan belas","sembilan belas","dua puluh"]
 HIJAIYAH = ["Alif","Ba","Ta","Tsa","Jim","Ha","Kha","Dal","Dzal","Ra","Zai","Sin","Syin","Shad",
  "Dhad","Tha","Zha","Ain","Ghain","Fa","Qaf","Kaf","Lam","Mim","Nun","Wau","Ha","Ya"]
+# nama huruf hijaiyah dalam tulisan Arab (untuk suara Arab asli)
+HIJAIYAH_AR = ["أَلِف","بَاء","تَاء","ثَاء","جِيم","حَاء","خَاء","دَال","ذَال","رَاء","زَاي","سِين",
+ "شِين","صَاد","ضَاد","طَاء","ظَاء","عَين","غَين","فَاء","قَاف","كَاف","لَام","مِيم","نُون","وَاو",
+ "هَاء","يَاء"]
 RUTIN = ["Bangun pagi","Peluk Ayah dan Ibu","Sikat gigi","Mandi","Sarapan","Ngaji dan belajar",
  "Makan siang","Tidur siang","Main dan rapikan mainan","Makan malam","Sikat gigi malam","Tidur malam"]
 HADIAH = ["Pelukan hangat","Ciuman sayang","Peluk dan gelitik","Jalan-jalan sore",
@@ -119,6 +123,8 @@ def daftar_klip():
         out.append(("angka_%d.mp3" % i, ANGKA[i].capitalize() + "."))
     for i, nama in enumerate(HIJAIYAH, start=1):
         out.append(("hijaiyah_%02d.mp3" % i, nama + "."))
+    for i, nama_ar in enumerate(HIJAIYAH_AR, start=1):
+        out.append(("hijaiyah_ar_%02d.mp3" % i, nama_ar))
     for i, nama in enumerate(RUTIN, start=1):
         out.append(("rutin_r%d.mp3" % i, "Hebat! %s selesai." % nama))
     for i, nama in enumerate(HADIAH, start=1):

@@ -16,7 +16,7 @@ Aplikasi web (PWA) untuk Al Fatih: belajar huruf, angka, huruf hijaiyah, kuis
 |---|---|
 | Belajar Huruf | A–Z, contoh kata + gambar + suara |
 | Belajar Angka | 1–20, dihitung dengan gambar, dibacakan |
-| Huruf Hijaiyah | 28 huruf hijaiyah, ditampilkan besar + suara |
+| Huruf Hijaiyah | 28 huruf hijaiyah, ditampilkan besar + suara. Bisa dipilih: **nama huruf** (alif, ba, ta…) atau **Arab asli** |
 | Belajar Sendiri | Kuis: aplikasi menyebut, anak memilih (dapat 1 bintang per jawaban benar) |
 | Rutinitas Hari Ini | 12 kartu kegiatan; selesai = 1 bintang |
 | Papan Bintang | Hitung bintang, target (bawaan 10), tombol tukar hadiah |
@@ -27,10 +27,13 @@ Aplikasi web (PWA) untuk Al Fatih: belajar huruf, angka, huruf hijaiyah, kuis
 Aplikasi memakai file MP3 yang sudah jadi (folder `audio/`), jadi tetap jalan tanpa internet.
 Bila folder `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat.
 
+**135 klip** (huruf A–Z, angka 1–20, 28 hijaiyah nama + 28 hijaiyah Arab asli, 12 kegiatan,
+9 hadiah, 12 frasa pujian) — total hanya ~1.810 karakter, jadi biayanya sangat kecil.
+
 Membuat file suara:
-1. Isi `ELEVENLABS_API_KEY` di `C:\Users\ASUS\AppData\Local\hermes\.env`
-2. Klik dua kali `tools\BUAT_SUARA.bat`
-3. Unggah folder `audio/` ke GitHub (atau minta Hermes mengunggahnya)
+1. Klik dua kali `tools\ISI_KUNCI_dan_BUAT_SUARA.bat` (kunci ElevenLabs dimasukkan di situ, tidak lewat chat)
+2. Berkas MP3 muncul di folder `audio\`
+3. Minta Hermes mengunggah folder `audio/` ke GitHub (agar ikut terpasang di HP)
 
 Pilihan lain: `python tools/generate_voice.py --list` untuk melihat daftar suara,
 atau set `ELEVENLABS_VOICE_ID` untuk memilih suara tertentu.

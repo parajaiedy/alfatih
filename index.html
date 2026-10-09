@@ -306,7 +306,7 @@ function stopAudio(){
 const A = {
   letter:(i) => 'huruf_' + LETTERS[i][0].toLowerCase() + '.mp3',
   number:(n) => 'angka_' + n + '.mp3',
-  hij:(i)   => 'hijaiyah_' + String(i+1).padStart(2,'0') + '.mp3',
+  hij:(i)   => (LS.get('af_hij_mode', 'nama') === 'arab' ? 'hijaiyah_ar_' : 'hijaiyah_') + String(i+1).padStart(2,'0') + '.mp3',
   routine:(r) => 'rutin_' + r.id + '.mp3',
   reward:(i) => 'hadiah_' + (i+1) + '.mp3',
   ph:(k) => 'frasa_' + k + '.mp3'
@@ -562,9 +562,24 @@ function showNumber(n){
 /* ================= HIJAIYAH ================= */
 VIEWS.hijaiyah = (v) => {
   setTitle('Huruf Hijaiyah');
+  const mode = LS.get('af_hij_mode', 'nama');
   const p = document.createElement('p'); p.className = 'prog-note';
   p.textContent = 'Sentuh hurufnya. Ada ' + HIJAIYAH.length + ' huruf hijaiyah.';
   v.appendChild(p);
+
+  const sw = document.createElement('div'); sw.className = 'tabs';
+  sw.innerHTML = '<button data-m="nama"' + (mode !== 'arab' ? ' class="on"' : '') + '>🔊 Nama huruf</button>' +
+                 '<button data-m="arab"' + (mode === 'arab' ? ' class="on"' : '') + '>🕋 Arab asli</button>';
+  sw.onclick = (e) => {
+    const m = e.target.getAttribute && e.target.getAttribute('data-m');
+    if (!m) return;
+    LS.set('af_hij_mode', m);
+    pop();
+    say(A.hij(0), m === 'arab' ? 'Alif' : 'Alif', m === 'arab' ? 'ar-SA' : 'id-ID', 0.75);
+    render('hijaiyah', false);
+  };
+  v.appendChild(sw);
+
   const g = document.createElement('div'); g.className = 'grid-letters';
   HIJAIYAH.forEach((H, i) => {
     const b = document.createElement('button');
@@ -577,14 +592,15 @@ VIEWS.hijaiyah = (v) => {
 };
 function showHijaiyah(i){
   const H = HIJAIYAH[i];
+  const mode = LS.get('af_hij_mode', 'nama');
   const c = openOverlay(
     '<button class="close">✕</button>' +
     '<div class="arab">' + H[0] + '</div>' +
     '<div class="word">' + H[1] + '</div>' +
-    '<div class="tip">bunyi: ' + H[2] + ' • sentuh untuk dengar lagi</div>' +
+    '<div class="tip">bunyi: ' + H[2] + ' • ' + (mode === 'arab' ? 'Arab asli' : 'nama huruf') + ' • sentuh untuk dengar lagi</div>' +
     '<div class="navrow"><button data-p="-1">←</button><button data-p="1">→</button></div>',
     'linear-gradient(150deg,#ddd6fe,#c4b5fd)');
-  const sayIt = () => say(A.hij(i), H[1], 'ar-SA', 0.75);
+  const sayIt = () => say(A.hij(i), H[1], mode === 'arab' ? 'ar-SA' : 'id-ID', 0.75);
   c.onclick = (e) => {
     const pv = e.target.getAttribute && e.target.getAttribute('data-p');
     if (pv) { closeOverlay(); showHijaiyah((i + Number(pv) + HIJAIYAH.length) % HIJAIYAH.length); return; }

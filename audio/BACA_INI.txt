@@ -1,0 +1,2 @@
+Letakkan file MP3 suara di folder ini (dibuat oleh tools/ISI_KUNCI_dan_BUAT_SUARA.bat).
+Aplikasi otomatis memakai file MP3 ini kalau ada; kalau belum ada, memakai suara bawaan perangkat.
