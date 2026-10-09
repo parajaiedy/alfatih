@@ -115,8 +115,8 @@ def daftar_klip():
     out = []
     for kode, teks in LETTERS:
         out.append(("huruf_%s.mp3" % kode, "%s. %s." % (kode.upper(), teks)))
-    for i, kata in enumerate(ANGKA, start=1):
-        out.append(("angka_%d.mp3" % i, kata.capitalize() + "."))
+    for i in range(1, 21):
+        out.append(("angka_%d.mp3" % i, ANGKA[i].capitalize() + "."))
     for i, nama in enumerate(HIJAIYAH, start=1):
         out.append(("hijaiyah_%02d.mp3" % i, nama + "."))
     for i, nama in enumerate(RUTIN, start=1):
