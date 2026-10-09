@@ -130,10 +130,10 @@
   .kv div{flex:1;background:rgba(255,255,255,.07);border-radius:14px;padding:12px;text-align:center}
   .kv b{display:block;font-size:22px;color:#fde047}
   .kv span{font-size:12.5px;opacity:.75}
-  .chart{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:12px;
-    background:rgba(255,255,255,.05);border-radius:14px;padding:10px}
+  .chart{display:flex;align-items:flex-end;gap:6px;height:168px;margin-top:12px;
+    background:rgba(255,255,255,.05);border-radius:14px;padding:10px;box-sizing:border-box}
   .chart .cb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0}
-  .chart .cb i{display:block;width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#38bdf8,#0284c7)}
+  .chart .cb i{display:block;width:100%;min-height:8px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#38bdf8,#0284c7)}
   .chart .cb em{font-size:10.5px;font-style:normal;opacity:.7;white-space:nowrap}
   .kuis-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .kuis-top .pill{background:rgba(255,255,255,.12);border-radius:99px;padding:8px 16px;font-weight:800;font-size:15px}
@@ -957,8 +957,8 @@ function pTabTumbuh(box){
     const mn = Math.min.apply(null, withKg.map(x => x.kg));
     const span = Math.max(0.5, mx - mn);
     chart = '<div class="chart">' + withKg.map(x => {
-      const h = Math.round(((x.kg - mn) / span) * 0.72 * 100) + 14;
-      return '<div class="cb"><em>' + x.kg + '</em><i style="height:' + h + '%"></i><em>' + x.d.slice(5) + '</em></div>';
+      const h = Math.round(((x.kg - mn) / span) * 96) + 20;
+      return '<div class="cb"><em>' + x.kg + '</em><i style="height:' + h + 'px"></i><em>' + x.d.slice(5) + '</em></div>';
     }).join('') + '</div>';
   }
 
