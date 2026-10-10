@@ -109,5 +109,53 @@ test('cerita tidak memakai kata menghukum', () => {
 });
 test('progres cerita muncul di panel orang tua', () => must(/cerita:'Cerita'/, 'skill label missing'));
 
+/* ---------- Papan Nama (orang dikenal) + cerita baru (TDD: uji dulu) ---------- */
+test('papan nama ada', () => must(/VIEWS\.nama\s*=/, 'missing VIEWS.nama'));
+test('papan nama bisa dibuka', () => must(/'nama'\]|'nama',/, 'not reachable'));
+test('daftar nama berisi orang yang diminta', () => {
+  const m = html.match(/const NAMA = \[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('NAMA list tidak ada');
+  const wajib = ['Fatimah','Ibrahim','Zainab','Mikail','Al Fatih','Aina','Miss Iis','Mami','Dady',
+    'Mama Hamzy','Puang Mama','Puang PP','Ayag','Ibu','Puang Cali','Alsya','Onty Tety','Tante Raoda'];
+  wajib.forEach(n => { if (m[1].indexOf("'" + n + "'") < 0) throw new Error('nama hilang: ' + n); });
+});
+test('nama punya kategori (keluarga/teman/guru)', () => {
+  must(/k:'keluarga'/, 'no keluarga category');
+  must(/k:'teman'/, 'no teman category');
+  must(/k:'guru'/, 'no guru category');
+});
+test('setiap nama dapat dibunyikan (berkas suara sendiri)', () => {
+  must(/nama:\(s\) => 'nama_' \+ s \+ '\.mp3'/, 'missing name audio mapping');
+  must(/function slugNama/, 'missing slug helper');
+});
+test('slug nama unik (tidak ada suara yang tertukar)', () => {
+  const m = html.match(/const NAMA = \[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('NAMA list tidak ada');
+  const names = (m[1].match(/t:'([^']+)'/g) || []).map(s => s.slice(3, -1));
+  const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const seen = {};
+  names.forEach(n => { const s = slug(n); if (seen[s]) throw new Error('slug bentrok: ' + s); seen[s] = 1; });
+  if (Object.keys(seen).length < 18) throw new Error('nama kurang: ' + Object.keys(seen).length);
+});
+test('papan nama mencatat progres', () => must(/record\('nama'/, 'no skill progress for names'));
+test('cerita bertambah (minimal 10)', () => {
+  const m = html.match(/const CERITA = \[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('CERITA tidak ada');
+  const n = (m[1].match(/\bid:'/g) || []).length;
+  if (n < 10) throw new Error('cerita masih ' + n);
+});
+test('cerita baru memakai nama teman & keluarga', () => {
+  const m = html.match(/const CERITA = \[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('CERITA tidak ada');
+  const c = m[1];
+  ['Fatimah','Ibrahim','Zainab','Mikail','Aina','Alsya','Miss Iis','Mami','Dady','Puang Mama','Puang PP','Ayag','Ibu','Puang Cali','Onty Tety','Tante Raoda','Mama Hamzy']
+    .forEach(n => { if (c.indexOf(n) < 0) throw new Error('nama belum dipakai di cerita: ' + n); });
+});
+test('cerita tetap tanpa perayaan ramai', () => {
+  const m = html.match(/const CERITA = \[([\s\S]*?)\n\];/);
+  if (/confetti|fanfare/.test(m[1])) throw new Error('cerita memakai confetti/fanfare');
+});
+test('label progres nama muncul di panel orang tua', () => must(/nama:'Nama'/, 'skill label missing'));
+
 console.log('\n' + pass + ' lulus, ' + fail + ' gagal');
 process.exit(fail ? 1 : 0);

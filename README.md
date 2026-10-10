@@ -24,7 +24,8 @@ rutinitas harian, papan bintang dan hadiah, serta catatan tumbuh kembang.
 | Kegiatan Lain → Cocokkan Kartu | Memori kecil 4 pasang |
 | Kegiatan Lain → Menggambar & Latihan | Kanvas untuk mencoret/menjiplak huruf (latihan bermain, bukan penilaian tulisan) |
 | Belajar Sendiri | Kuis: aplikasi menyebut, anak memilih (dapat 1 bintang per jawaban benar) |
-| Cerita Pendek | 4 cerita dibaca bersama menjelang tidur: teks pendek, gambar besar, satu pertanyaan yang bisa disentuh (2 pilihan untuk usia 3), dan **layar otomatis jadi lebih redup/tenang**. Memakai nama anak di dalam cerita |
+| Kenal Nama | 18 orang dikenal (Aku, Keluarga, Teman, Guru) — sentuh namanya, terdengar suaranya. Menambah kosakata & kedekatan |
+| Cerita Pendek | 10 cerita dibaca bersama menjelang tidur: teks pendek, gambar besar, satu pertanyaan yang bisa disentuh (2 pilihan untuk usia 3), dan **layar otomatis jadi lebih redup/tenang**. Memakai nama anak di dalam cerita |
 | Cari Benda di Rumah | Anak mencari benda **nyata** di rumah (warna, bentuk, sifat, fungsi). Layar hanya memberi tantangan — belajar sambil bergerak. Ada tombol "Ganti" agar anak tidak pernah macet |
 | Rutinitas Hari Ini | 12 kartu kegiatan; selesai = 1 bintang |
 | Papan Bintang | Hitung bintang, target (bawaan 10), tukar hadiah. Tombol peluk selalu tersedia tanpa bintang |
@@ -44,9 +45,15 @@ Aplikasi memakai file MP3 yang sudah jadi (folder `audio/`), jadi tetap jalan ta
 Bila `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat dan menjelaskannya
 di beranda. Volume dan tombol **bisukan** ada di Pengaturan Ayah/Ibu.
 
-**Status: 141 klip sudah dibuat** — huruf A–Z, angka 1–20, 28 hijaiyah (nama) + 28 hijaiyah
-(Arab), 12 kegiatan, 9 hadiah, 18 frasa. Suara: **Jessica** (premade, hangat/ceria),
-model `eleven_multilingual_v2`. Pemakaian ~2.044 karakter dari kuota.
+**Status: 219 klip sudah dibuat** — huruf A–Z, angka 1–20, 28 hijaiyah (nama) + 28 hijaiyah
+(Arab), 12 kegiatan, 9 hadiah, 18 frasa, **18 nama orang**, **60 halaman cerita**.
+Suara: **Jessica** (premade, hangat/ceria), model `eleven_multilingual_v2`.
+
+> Nama anak di dalam suara cerita memakai `NAMA_ANAK` di `tools/generate_voice.py`
+> (bawaan "Al Fatih"). Bila nama anak diganti, ubah nilai itu lalu jalankan
+> pembuat suara dengan `--force` untuk memperbarui klip cerita.
+> Ada nama yang salah dengar? Isi `NAMA_UCAP` (mis. `"Puang PP": "Puang Pe Pe"`)
+> lalu jalankan ulang.
 
 Membuat ulang file suara:
 1. Klik dua kali `tools\BUAT_SUARA.bat` — kunci diambil dari `tools\kunci.txt`, papan klip,
@@ -74,7 +81,9 @@ Mohon diperiksa Ayah/Ibu atau guru ngaji; aplikasi ini tidak mengklaim sudah ses
 - `tools/generate_voice.py` — pembuat suara ElevenLabs (`--check` untuk memeriksa kunci & kuota, `--list` untuk melihat suara)
 - `tests/static.test.cjs` — pemeriksaan statis
 - `tests/cari.runtime.cjs` — uji perilaku mode Cari Benda (butuh Chrome headless port 9241)
-- `tests/cerita.runtime.cjs` — uji perilaku Cerita Pendek (butuh Chrome headless port 9241)
+- `tests/cerita.runtime.cjs` — uji perilaku Cerita Pendek
+- `tests/nama.runtime.cjs` — uji perilaku Papan Nama
+- Uji runtime menerima argumen: `<alamat> <port CDP>` (bawaan `http://127.0.0.1:8899/index.html 127.0.0.1:9241`)
 - `REFERENCES.md` — sumber rujukan desain & apa yang diadaptasi
 
 ## Menjalankan uji

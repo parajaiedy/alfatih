@@ -3,7 +3,7 @@
    Menulis hasil ke af_cdp_result.txt dan tangkapan layar ke folder screenshot uji. */
 const fs = require('fs');
 const path = require('path');
-const CDP_HOST = '127.0.0.1:9241';
+const CDP_HOST = process.argv[3] || '127.0.0.1:9241';   // port CDP (agar lokal & live tidak tertukar)
 const BASE = process.argv[2] || 'http://127.0.0.1:8899/index.html';
 const OUT = path.join(__dirname, '..', 'screenshot', 'uji');
 const SHOTS = path.join(__dirname, '..', 'screenshot', 'uji');

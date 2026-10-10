@@ -9,7 +9,7 @@ Jalankan:  python generate_voice.py            (buat yang belum ada)
            python generate_voice.py --force    (buat ulang semua)
            python generate_voice.py --list     (lihat daftar suara yang tersedia)
 """
-import json, os, sys, time, urllib.request, urllib.error
+import json, os, re, sys, time, urllib.request, urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)              # folder aplikasi (alfatih)
@@ -36,6 +36,19 @@ HIJAIYAH = ["Alif","Ba","Ta","Tsa","Jim","Ha","Kha","Dal","Dzal","Ra","Zai","Sin
 HIJAIYAH_AR = ["أَلِف","بَاء","تَاء","ثَاء","جِيم","حَاء","خَاء","دَال","ذَال","رَاء","زَاي","سِين",
  "شِين","صَاد","ضَاد","طَاء","ظَاء","عَين","غَين","فَاء","قَاف","كَاف","لَام","مِيم","نُون","وَاو",
  "هَاء","يَاء"]
+# Nama orang yang dikenal anak. Kunci audio memakai "slug" agar tidak tertukar
+# walau urutannya diubah. Bila ada nama yang salah dengar, cukup isi NAMA_UCAP
+# dengan cara bacanya, lalu jalankan ulang dengan --force.
+NAMA = ["Al Fatih","Mami","Dady","Ibu","Ayag","Mama Hamzy","Puang Mama","Puang PP",
+ "Puang Cali","Onty Tety","Tante Raoda","Fatimah","Zainab","Aina","Alsya","Ibrahim",
+ "Mikail","Miss Iis"]
+NAMA_UCAP = {
+ "Puang PP": "Puang Pe Pe",
+}
+# Nama anak untuk mengisi {nama} di dalam suara cerita. Ganti bila nama anak berbeda,
+# lalu jalankan ulang pembuat suara (hanya klip cerita yang perlu diperbarui).
+NAMA_ANAK = "Al Fatih"
+
 RUTIN = ["Bangun pagi","Peluk Ayah dan Ibu","Sikat gigi","Mandi","Sarapan","Ngaji dan belajar",
  "Makan siang","Tidur siang","Main dan rapikan mainan","Makan malam","Sikat gigi malam","Tidur malam"]
 HADIAH = ["Pelukan hangat","Ciuman sayang","Peluk dan gelitik","Jalan-jalan sore",
@@ -132,6 +145,46 @@ def tulis_mp3(teks, path, kunci, voice_id):
             time.sleep(3 * (percobaan + 1))
     raise SystemExit("Gagal menghubungi ElevenLabs setelah beberapa percobaan.")
 
+def slug_nama(t):
+    return re.sub(r"[^a-z0-9]+", "_", t.lower()).strip("_")
+
+
+# Ringkas: id + teks tiap halaman (harus sama dengan CERITA di index.html)
+CERITA = [
+ {"id":"bola","halaman":[{"t":"{nama} punya bola merah."},{"t":"Bola itu menggelinding ke kebun."},
+   {"t":"Mana bola merahnya?"},{"t":"Bola berhenti di dekat pohon."},{"t":"Ayo bawa bola itu pulang."},
+   {"t":"{nama} memeluk bolanya. Bola itu senang."}]},
+ {"id":"kucing","halaman":[{"t":"Ada kucing kecil di depan rumah."},{"t":"Kucing itu mengeong. Meong… meong…"},
+   {"t":"Mana kucingnya?"},{"t":"Kucing itu lapar. Ayo beri susu."},{"t":"Kucing minum sampai habis."},
+   {"t":"Terima kasih, {nama}. Kucing itu tidur."}]},
+ {"id":"bintang","halaman":[{"t":"Malam sudah datang. Langit menjadi gelap."},
+   {"t":"{nama} melihat ke langit. Ada banyak bintang."},{"t":"Mana bulannya?"},
+   {"t":"Ayo hitung bintangnya. Satu… dua… tiga."},{"t":"Bintang berkedip. Kelip… kelip…"},
+   {"t":"Selamat tidur, {nama}. Besok kita bermain lagi."}]},
+ {"id":"kuncup","halaman":[{"t":"Kuncup punya satu biji kecil."},{"t":"Biji itu ditanam di tanah."},
+   {"t":"Mana air untuk menyiram?"},{"t":"Kuncup menyiram bijinya setiap hari."},
+   {"t":"Tumbuh tunas kecil! Hore!"},{"t":"{nama} ikut menyiram. Besok tumbuh bunga."}]},
+ {"id":"sekolah","halaman":[{"t":"{nama} pergi ke sekolah pagi ini."},{"t":"Miss Iis menyapa di pintu. Selamat pagi!"},
+   {"t":"Mana tas sekolahnya?"},{"t":"Aina dan Alsya sudah datang."},{"t":"Mereka belajar sambil bermain."},
+   {"t":"Miss Iis bilang, {nama} pintar hari ini."}]},
+ {"id":"masjid","halaman":[{"t":"Hari ini Ayag mengantar ke masjid."},{"t":"Dady dan Ibrahim sudah menunggu di depan."},
+   {"t":"Mana air untuk berwudu?"},{"t":"Ibrahim mengajak {nama} duduk di barisan depan."},
+   {"t":"Mereka mendengar dengan tenang."},{"t":"Pulang ke rumah, Ibu menyiapkan makan siang."}]},
+ {"id":"kue","halaman":[{"t":"Fatimah datang membawa sekotak kue."},{"t":"Zainab ikut datang membawa susu."},
+   {"t":"Mana kue itu?"},{"t":"Fatimah membagi kue untuk semua."},{"t":"{nama} mendapat satu. Rasanya manis."},
+   {"t":"Terima kasih, Fatimah. Kita makan bersama."}]},
+ {"id":"taman","halaman":[{"t":"Pagi ini {nama} pergi ke taman."},{"t":"Mikail dan Ibrahim sudah bermain di sana."},
+   {"t":"Mana ayunannya?"},{"t":"Mikail bergantian dengan Ibrahim."},{"t":"{nama} menunggu giliran dengan sabar."},
+   {"t":"Pulang dengan hati senang."}]},
+ {"id":"puangmama","halaman":[{"t":"Ada tamu datang hari ini."},{"t":"Puang Mama datang membawa buah."},
+   {"t":"Mana buahnya?"},{"t":"Puang PP ikut datang. Dia tersenyum."},
+   {"t":"Puang Cali juga datang. Rumah jadi ramai."},{"t":"{nama} duduk di dekat mereka. Senang sekali."}]},
+ {"id":"masak","halaman":[{"t":"Mami mau memasak hari ini."},{"t":"Mama Hamzy menyiapkan sayurnya."},
+   {"t":"Mana sendoknya?"},{"t":"Onty Tety mengaduk sup di panci."},{"t":"Tante Raoda mencicipi. Enak!"},
+   {"t":"{nama} membantu menata meja makan."}]}
+]
+
+
 def daftar_klip():
     out = []
     for kode, teks in LETTERS:
@@ -148,6 +201,12 @@ def daftar_klip():
         out.append(("hadiah_%d.mp3" % i, "Hadiah untukmu! %s." % nama))
     for kunci, teks in FRASA.items():
         out.append(("frasa_%s.mp3" % kunci, teks))
+    for t in NAMA:
+        out.append(("nama_%s.mp3" % slug_nama(t), NAMA_UCAP.get(t, t) + "."))
+    for c in CERITA:
+        for n, hal in enumerate(c["halaman"], start=1):
+            teks = hal["t"].replace("{nama}", NAMA_ANAK)
+            out.append(("cerita_%s_%d.mp3" % (c["id"], n), teks))
     return out
 
 def cek_kunci(kunci):

@@ -77,7 +77,7 @@
   .t5{background:linear-gradient(150deg,#E3D6F7,#C9B3EC)}
   .t6{background:linear-gradient(150deg,#FFE1A8,#F7CE7B)}
   .t7{background:linear-gradient(150deg,#C7E8F5,#9BD4EA)}
-  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+  .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
   .strip button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 6px;cursor:pointer;
     font-family:inherit;font-weight:800;font-size:12px;color:var(--ink);box-shadow:var(--shadow);display:flex;
     flex-direction:column;align-items:center;gap:4px}
@@ -251,6 +251,16 @@
   body.tenang .pilih-cerita button{background:#343B60}
   .pilih-cerita button.benar{background:linear-gradient(150deg,#CDEBC9,#A6DC9E)!important;animation:pulse .5s}
   .pilih-cerita button.coba{animation:shake .4s}
+  .nama-sec{font-size:15px;font-weight:900;color:var(--teal-d);margin:18px 0 8px}
+  body.tenang .nama-sec{color:#F2C97D}
+  .nama-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .nama-grid button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:14px 6px;
+    cursor:pointer;font-family:inherit;box-shadow:var(--shadow);display:flex;flex-direction:column;
+    align-items:center;gap:6px;min-height:104px}
+  .nama-grid button:active{transform:scale(.95)}
+  .nama-grid .ne{font-size:36px;line-height:1}
+  .nama-grid .nt{font-size:13.5px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25}
+  .nama-grid button.suara{background:linear-gradient(150deg,#FFE9B8,#F7CE7B);border-color:#F2B33D}
   .cerita-daftar{display:flex;flex-direction:column;gap:12px;margin-top:12px}
   .cerita-daftar button{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:#fff;
     border-radius:20px;padding:14px 16px;cursor:pointer;font-family:inherit;text-align:left;box-shadow:var(--shadow);width:100%}
@@ -487,7 +497,8 @@ const A = {
   routine:(r) => 'rutin_' + r.id + '.mp3',
   reward:(i) => 'hadiah_' + (i+1) + '.mp3',
   ph:(k) => 'frasa_' + k + '.mp3',
-  cerita:(id, n) => 'cerita_' + id + '_' + n + '.mp3'
+  cerita:(id, n) => 'cerita_' + id + '_' + n + '.mp3',
+  nama:(s) => 'nama_' + s + '.mp3'
 };
 const PH = {
   pagi:['Selamat pagi, sayang','sapa_pagi'], siang:['Selamat siang, sayang','sapa_siang'],
@@ -645,7 +656,7 @@ VIEWS.home = (v) => {
   v.appendChild(g);
 
   const strip = document.createElement('div'); strip.className = 'strip';
-  [['✅','Rutinitas','rutin'],['⭐','Bintang','bintang'],['📖','Cerita','daftarcerita'],['➕','Lainnya','more']].forEach(t => {
+  [['✅','Rutinitas','rutin'],['⭐','Bintang','bintang'],['📖','Cerita','daftarcerita'],['🙋','Nama','nama'],['➕','Lainnya','more']].forEach(t => {
     const b = document.createElement('button');
     b.innerHTML = '<span class="se">' + t[0] + '</span>' + esc(t[1]);
     b.onclick = () => {
@@ -711,6 +722,7 @@ VIEWS.more = (v) => {
     ['🧮','Berhitung (sentuh)','t4','hitung', true],
     ['🃏','Cocokkan Kartu','t6','cocok', true],
     ['✏️','Menggambar & Latihan','t1','gambar', true],
+    ['🙋','Kenal Nama','t7','nama', true],
     ['📖','Cerita Pendek','t5','daftarcerita', true],
     ['🏠','Cari Benda di Rumah','t7','cari', true],
     ['🧠','Tebak-tebakan','t6','kuis', true],
@@ -1146,6 +1158,80 @@ function cariSelesai(v){
   v.appendChild(home);
 }
 
+/* ================= PAPAN NAMA (orang yang dikenal) ================= */
+/* Anak menyentuh nama orang terdekat dan mendengar namanya.
+   Sangat berharga untuk usia 3 tahun: mengenal orang & menambah kosakata. */
+const NAMA = [
+  { t:'Al Fatih',   k:'aku',      em:"🧒" },
+  { t:'Mami',       k:'keluarga', em:"👩" },
+  { t:'Dady',       k:'keluarga', em:"👨" },
+  { t:'Ibu',        k:'keluarga', em:"👩" },
+  { t:'Ayag',       k:'keluarga', em:"👨" },
+  { t:'Mama Hamzy', k:'keluarga', em:"👩" },
+  { t:'Puang Mama', k:'keluarga', em:"👵" },
+  { t:'Puang PP',   k:'keluarga', em:"👴" },
+  { t:'Puang Cali', k:'keluarga', em:"👵" },
+  { t:'Onty Tety',  k:'keluarga', em:"👩" },
+  { t:'Tante Raoda',k:'keluarga', em:"👩" },
+  { t:'Fatimah',    k:'teman',    em:"👧" },
+  { t:'Zainab',     k:'teman',    em:"👧" },
+  { t:'Aina',       k:'teman',    em:"👧" },
+  { t:'Alsya',      k:'teman',    em:"👧" },
+  { t:'Ibrahim',    k:'teman',    em:"👦" },
+  { t:'Mikail',     k:'teman',    em:"👦" },
+  { t:'Miss Iis',   k:'guru',     em:"👩" }
+];
+const NAMA_KAT = [ ['aku','Aku'], ['keluarga','Keluarga'], ['teman','Teman'], ['guru','Guru'] ];
+function slugNama(t){ return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+
+VIEWS.nama = (v) => {
+  setTitle('Kenal Nama');
+  const p = document.createElement('p'); p.className = 'prog-note';
+  p.textContent = 'Sentuh nama orangnya — nanti terdengar suaranya. Ajak anak menyebut namanya juga.';
+  v.appendChild(p);
+
+  NAMA_KAT.forEach(kat => {
+    const orang = NAMA.filter(x => x.k === kat[0]);
+    if (!orang.length) return;
+    const h = document.createElement('div'); h.className = 'nama-sec';
+    h.textContent = kat[1];
+    v.appendChild(h);
+    const g = document.createElement('div'); g.className = 'nama-grid';
+    orang.forEach(o => {
+      const b = document.createElement('button');
+      b.className = 'nama-btn';
+      b.innerHTML = '<span class="ne">' + o.em + '</span><span class="nt">' + esc(o.t) + '</span>';
+      b.onclick = () => { pop(); bukaNama(o); };
+      g.appendChild(b);
+    });
+    v.appendChild(g);
+  });
+
+  const n = NAMA.length;
+  const prog = S.prog().nama;
+  const note = document.createElement('p'); note.className = 'prog-note'; note.style.marginTop = '16px';
+  note.textContent = prog && prog.attempts
+    ? 'Sudah ' + prog.attempts + ' nama disentuh (' + n + ' nama tersedia).'
+    : n + ' nama tersedia.';
+  v.appendChild(note);
+};
+
+function bukaNama(o){
+  const s = slugNama(o.t);
+  S.record('nama', true);
+  const c = openOverlay(
+    '<button class="close" aria-label="Tutup">✕</button>' +
+    '<div class="em" style="font-size:clamp(72px,24vw,120px)">' + o.em + '</div>' +
+    '<div class="word">' + esc(o.t) + '</div>' +
+    '<div class="tip">sentuh untuk dengar lagi</div>',
+    'linear-gradient(150deg,#FFE9B8,#F7CE7B)');
+  c.onclick = (e) => {
+    if (e.target.classList.contains('close')) { closeOverlay(); render('nama', false); return; }
+    pop(); say(A.nama(s), o.t, 'id-ID', 0.85);
+  };
+  setTimeout(() => say(A.nama(s), o.t, 'id-ID', 0.85), 240);
+}
+
 /* ================= CERITA PENDEK (dibaca bersama, suasana tenang) ================= */
 /* Untuk menjelang tidur: teks sedikit, gambar besar, satu pertanyaan yang bisa
    disentuh, dan penutup tenang (tanpa perayaan ramai / suara nyaring).
@@ -1181,7 +1267,55 @@ const CERITA = [
     { t:'Mana air untuk menyiram?', pilihan:['💧','🔥','🪨'], benar:'💧' },
     { t:'Kuncup menyiram bijinya setiap hari.', em:'💧' },
     { t:'Tumbuh tunas kecil! Hore!', em:'🌿' },
-    { t:'{nama} ikut menyiram. Besok tumbuh bunga.', em:'🌸' }
+    { t:'{nama} ikut menyiram. Besok tumbuh bunga.', em:'🌼' }
+  ]},
+  { id:'sekolah', judul:'Di Sekolah', em:'🏫', halaman:[
+    { t:'{nama} pergi ke sekolah pagi ini.', em:'🏫' },
+    { t:'Miss Iis menyapa di pintu. "Selamat pagi!"', em:'👩' },
+    { t:'Mana tas sekolahnya?', pilihan:['🎒','🍌','🧦'], benar:'🎒' },
+    { t:'Aina dan Alsya sudah datang.', em:'👧' },
+    { t:'Mereka belajar sambil bermain.', em:'🧩' },
+    { t:'Miss Iis bilang, "{nama} pintar hari ini."', em:'🌟' }
+  ]},
+  { id:'masjid', judul:'Ke Masjid', em:'🕌', halaman:[
+    { t:'Hari ini Ayag mengantar ke masjid.', em:'🕌' },
+    { t:'Dady dan Ibrahim sudah menunggu di depan.', em:'👨' },
+    { t:'Mana air untuk berwudu?', pilihan:['💧','🔥','🪨'], benar:'💧' },
+    { t:'Ibrahim mengajak {nama} duduk di barisan depan.', em:'🕌' },
+    { t:'Mereka mendengar dengan tenang.', em:'🤫' },
+    { t:'Pulang ke rumah, Ibu menyiapkan makan siang.', em:'🍛' }
+  ]},
+  { id:'kue', judul:'Kue Fatimah', em:'🍰', halaman:[
+    { t:'Fatimah datang membawa sekotak kue.', em:'🍰' },
+    { t:'Zainab ikut datang membawa susu.', em:'🥛' },
+    { t:'Mana kue itu?', pilihan:['🍰','🐟','🚗'], benar:'🍰' },
+    { t:'Fatimah membagi kue untuk semua.', em:'🍽️' },
+    { t:'{nama} mendapat satu. Rasanya manis.', em:'😋' },
+    { t:'Terima kasih, Fatimah. Kita makan bersama.', em:'🤗' }
+  ]},
+  { id:'taman', judul:'Main di Taman', em:'🛝', halaman:[
+    { t:'Pagi ini {nama} pergi ke taman.', em:'🌳' },
+    { t:'Mikail dan Ibrahim sudah bermain di sana.', em:'👦' },
+    { t:'Mana ayunannya?', pilihan:['🛝','🍇','📚'], benar:'🛝' },
+    { t:'Mikail bergantian dengan Ibrahim.', em:'🤝' },
+    { t:'{nama} menunggu giliran dengan sabar.', em:'⏳' },
+    { t:'Pulang dengan hati senang.', em:'😊' }
+  ]},
+  { id:'puangmama', judul:'Puang Mama Datang', em:'🎁', halaman:[
+    { t:'Ada tamu datang hari ini.', em:'🚪' },
+    { t:'Puang Mama datang membawa buah.', em:'🍎' },
+    { t:'Mana buahnya?', pilihan:['🍎','🧦','🔑'], benar:'🍎' },
+    { t:'Puang PP ikut datang. Dia tersenyum.', em:'😊' },
+    { t:'Puang Cali juga datang. Rumah jadi ramai.', em:'👵' },
+    { t:'{nama} duduk di dekat mereka. Senang sekali.', em:'🏠' }
+  ]},
+  { id:'masak', judul:'Masak Bersama Mami', em:'🍲', halaman:[
+    { t:'Mami mau memasak hari ini.', em:'🍲' },
+    { t:'Mama Hamzy menyiapkan sayurnya.', em:'🥬' },
+    { t:'Mana sendoknya?', pilihan:['🥄','⚽','🎈'], benar:'🥄' },
+    { t:'Onty Tety mengaduk sup di panci.', em:'🥣' },
+    { t:'Tante Raoda mencicipi. Enak!', em:'😋' },
+    { t:'{nama} membantu menata meja makan.', em:'🍽️' }
   ]}
 ];
 
@@ -1862,7 +1996,7 @@ function pTabUmum(box){
 
 function pTabProgres(box){
   const p = S.prog();
-  const names = { huruf:'Huruf', angka:'Angka', hijaiyah:'Hijaiyah', hitung:'Berhitung', cocok:'Mencocokkan', gambar:'Menggambar', bentuk:'Bentuk & Warna', cari:'Cari Benda', cerita:'Cerita' };
+  const names = { huruf:'Huruf', angka:'Angka', hijaiyah:'Hijaiyah', hitung:'Berhitung', cocok:'Mencocokkan', gambar:'Menggambar', bentuk:'Bentuk & Warna', cari:'Cari Benda', cerita:'Cerita', nama:'Nama' };
   const rows = Object.keys(names).map(k => {
     const e = p[k]; if (!e || !e.attempts) return '';
     const acc = Math.round((e.correct / e.attempts) * 100);
