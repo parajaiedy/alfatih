@@ -19,18 +19,43 @@ Write-Host "   $envFile" -ForegroundColor DarkGray
 Write-Host "Kunci TIDAK dikirim ke mana pun selain ElevenLabs." -ForegroundColor DarkGray
 Write-Host ""
 
-# ---- 1. minta kunci (masukan tersembunyi, aman untuk ditempel) ----
-$secure = Read-Host "Tempel kunci ElevenLabs (biasanya mulai dengan sk_) lalu tekan Enter" -AsSecureString
-$bstr   = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-$key    = [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+# ---- 1. ambil kunci: utamakan papan klip (copy dari ElevenLabs, tidak perlu ketik) ----
+$key = ""
+try {
+  $clip = (Get-Clipboard -Raw -ErrorAction SilentlyContinue)
+  if ($clip) { $clip = $clip.Trim() }
+} catch { $clip = "" }
+
+if ($clip -and $clip -match '^sk_[A-Za-z0-9_\-]{20,}$') {
+  $tampil = $clip.Substring(0,6) + "..." + $clip.Substring($clip.Length-4)
+  Write-Host "Kunci ditemukan di papan klip (copy-an terakhir):" -ForegroundColor Green
+  Write-Host "   $tampil" -ForegroundColor DarkGray
+  Write-Host ""
+  $jawab = Read-Host "Pakai kunci ini? (Enter = ya, t = tidak)"
+  if ($jawab -match '^[tT]') { $clip = "" } else { $key = $clip }
+}
+
+if (-not $key) {
+  Write-Host "Tempel kunci di bawah ini (klik kanan = tempel), lalu tekan Enter." -ForegroundColor Cyan
+  Write-Host "Tidak akan tampil di layar - itu memang disengaja." -ForegroundColor DarkGray
+  $secure = Read-Host "Kunci ElevenLabs" -AsSecureString
+  $bstr   = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  $key    = [Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+  [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+  if ($key) { $key = $key.Trim() }
+}
 
 if ([string]::IsNullOrWhiteSpace($key)) {
   Write-Host ""
   Write-Host "Kunci kosong - tidak ada yang diubah." -ForegroundColor Yellow
   exit 1
 }
-$key = $key.Trim()
+if ($key.Length -lt 20 -or $key -notmatch '^sk_') {
+  Write-Host ""
+  Write-Host "Ini sepertinya bukan kunci ElevenLabs (harus mulai dengan sk_ dan panjang)." -ForegroundColor Yellow
+  Write-Host "Salin ulang dari ElevenLabs -> API Keys, lalu jalankan berkas ini lagi." -ForegroundColor Yellow
+  exit 1
+}
 
 # ---- 2. simpan ke .env (sunting per baris, aman dari karakter khusus) ----
 if (-not (Test-Path -LiteralPath $envFile)) {
