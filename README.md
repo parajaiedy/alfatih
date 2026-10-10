@@ -43,10 +43,23 @@ Aplikasi memakai file MP3 yang sudah jadi (folder `audio/`), jadi tetap jalan ta
 Bila `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat dan menjelaskannya
 di beranda. Volume dan tombol **bisukan** ada di Pengaturan Ayah/Ibu.
 
-Membuat file suara:
-1. Klik dua kali `tools\BUAT_SUARA.bat` — muncul kotak: tempel kunci ElevenLabs di situ (kunci tidak lewat chat). Skrip memeriksa kunci dulu, lalu membuat semua klip.
-2. Berkas MP3 muncul di folder `audio\`.
+**Status: 141 klip sudah dibuat** — huruf A–Z, angka 1–20, 28 hijaiyah (nama) + 28 hijaiyah
+(Arab), 12 kegiatan, 9 hadiah, 18 frasa. Suara: **Jessica** (premade, hangat/ceria),
+model `eleven_multilingual_v2`. Pemakaian ~2.044 karakter dari kuota.
+
+Membuat ulang file suara:
+1. Klik dua kali `tools\BUAT_SUARA.bat` — kunci diambil dari `tools\kunci.txt`, papan klip,
+   atau diketik tersembunyi (tidak pernah lewat chat).
+2. Skrip memeriksa kunci + sisa kuota dulu, baru membuat semua klip.
 3. Minta Hermes mengunggah folder `audio/` ke GitHub.
+
+### Batas paket ElevenLabs (penting)
+Paket **Free tidak boleh memakai "library voice"** (suara komunitas) lewat API — ditolak
+`402 payment_required`. Termasuk dua suara **Indonesia** (*Kanna*, *Maya*) yang berstatus
+*professional*. Karena itu hanya kategori **premade** yang dipakai, dan suara premade
+semuanya beraksen Inggris: pengucapan Bahasa Indonesia terdengar agak asing.
+Ingin suara Indonesia asli? Perlu paket berbayar, lalu set `ELEVENLABS_VOICE_ID`
+sebelum menjalankan pembuat suara. Lihat pilihan: `python tools/generate_voice.py --list`.
 
 Catatan jujur: suara nama huruf/bunyi Arab dibuat oleh AI, bukan rekaman guru.
 Mohon diperiksa Ayah/Ibu atau guru ngaji; aplikasi ini tidak mengklaim sudah sesuai tajwid.
