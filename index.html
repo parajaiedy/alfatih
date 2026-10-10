@@ -77,9 +77,9 @@
   .t5{background:linear-gradient(150deg,#E3D6F7,#C9B3EC)}
   .t6{background:linear-gradient(150deg,#FFE1A8,#F7CE7B)}
   .t7{background:linear-gradient(150deg,#C7E8F5,#9BD4EA)}
-  .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
   .strip button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 6px;cursor:pointer;
-    font-family:inherit;font-weight:800;font-size:13.5px;color:var(--ink);box-shadow:var(--shadow);display:flex;
+    font-family:inherit;font-weight:800;font-size:12px;color:var(--ink);box-shadow:var(--shadow);display:flex;
     flex-direction:column;align-items:center;gap:4px}
   .strip button:active{transform:scale(.96)}
   .strip .se{font-size:24px}
@@ -228,6 +228,36 @@
   .fly{position:fixed;z-index:70;font-size:38px;pointer-events:none;transition:all .9s cubic-bezier(.2,.8,.2,1)}
   .conf{position:fixed;top:-40px;z-index:70;font-size:28px;pointer-events:none;animation:fall 1.9s linear forwards}
   @keyframes fall{to{transform:translateY(105vh) rotate(420deg);opacity:.15}}
+  /* ---------- suasana tenang (menjelang tidur) ---------- */
+  body.tenang{background:linear-gradient(180deg,#1B2340 0%,#272C4C 55%,#3A2F4A 100%);background-attachment:fixed}
+  body.tenang header{background:rgba(18,22,42,.92);border-bottom-color:rgba(255,255,255,.08)}
+  body.tenang header h1{color:#F6E7C6}
+  body.tenang .ico-btn{background:rgba(255,255,255,.14);color:#F6E7C6}
+  body.tenang .prog-note{color:#C9BEDA;opacity:.95}
+  body.tenang footer{color:#A99DBE;opacity:.8}
+  .cerita-kartu{background:#FFF8EE;border-radius:26px;padding:22px 18px;box-shadow:var(--shadow-lg);text-align:center}
+  body.tenang .cerita-kartu{background:#2B3152;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+  .cerita-em{font-size:clamp(68px,23vw,104px);line-height:1.15}
+  .cerita-teks{font-size:clamp(19px,5.2vw,24px);font-weight:800;line-height:1.5;margin-top:10px;color:var(--ink)}
+  body.tenang .cerita-teks{color:#F6E7C6}
+  .cerita-pil{display:flex;justify-content:center;align-items:center;gap:7px;margin:16px 0 4px}
+  .cerita-pil i{display:block;width:9px;height:9px;border-radius:50%;background:rgba(51,38,26,.22)}
+  .cerita-pil i.on{width:24px;border-radius:99px;background:var(--teal)}
+  body.tenang .cerita-pil i{background:rgba(255,255,255,.22)}
+  body.tenang .cerita-pil i.on{background:#F2C97D}
+  .pilih-cerita{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  .pilih-cerita button{border:none;border-radius:22px;padding:18px 8px;font-size:clamp(42px,14vw,60px);
+    cursor:pointer;font-family:inherit;background:#fff;box-shadow:var(--shadow);min-height:100px}
+  body.tenang .pilih-cerita button{background:#343B60}
+  .pilih-cerita button.benar{background:linear-gradient(150deg,#CDEBC9,#A6DC9E)!important;animation:pulse .5s}
+  .pilih-cerita button.coba{animation:shake .4s}
+  .cerita-daftar{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+  .cerita-daftar button{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:#fff;
+    border-radius:20px;padding:14px 16px;cursor:pointer;font-family:inherit;text-align:left;box-shadow:var(--shadow);width:100%}
+  .cerita-daftar button:active{transform:scale(.985)}
+  .cerita-daftar .ce{font-size:34px;line-height:1}
+  .cerita-daftar .ct{display:block;font-weight:900;font-size:17px;color:var(--ink)}
+  .cerita-daftar .cs{display:block;font-size:13px;color:var(--ink-soft);margin-top:2px}
   footer{text-align:center;font-size:12.5px;color:var(--ink-soft);padding:6px 12px 26px;line-height:1.6}
   .sec-title{font-size:15px;font-weight:900;color:var(--teal-d);margin:18px 0 8px}
   .safety{background:#FFFDF8;border:1px solid var(--line);border-radius:16px;padding:14px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
@@ -456,7 +486,8 @@ const A = {
   hij:(i)   => (LS.get('af_hij_mode', 'nama') === 'arab' ? 'hijaiyah_ar_' : 'hijaiyah_') + String(i+1).padStart(2,'0') + '.mp3',
   routine:(r) => 'rutin_' + r.id + '.mp3',
   reward:(i) => 'hadiah_' + (i+1) + '.mp3',
-  ph:(k) => 'frasa_' + k + '.mp3'
+  ph:(k) => 'frasa_' + k + '.mp3',
+  cerita:(id, n) => 'cerita_' + id + '_' + n + '.mp3'
 };
 const PH = {
   pagi:['Selamat pagi, sayang','sapa_pagi'], siang:['Selamat siang, sayang','sapa_siang'],
@@ -530,6 +561,7 @@ let stack = [];
 function setTitle(t){ const el = $('#ttl'); if (el) el.textContent = t; }
 function render(name, push){
   clearTimers(); stopAudio(); cleanFx();
+  modeTenang(name === 'cerita');
   if (push !== false) { if (stack[stack.length-1] !== name) stack.push(name); }
   const v = $('#view'); if (!v) return; v.innerHTML = '';
   (VIEWS[name] || VIEWS.home)(v);
@@ -613,7 +645,7 @@ VIEWS.home = (v) => {
   v.appendChild(g);
 
   const strip = document.createElement('div'); strip.className = 'strip';
-  [['✅','Rutinitas','rutin'],['⭐','Bintang','bintang'],['➕','Lainnya','more']].forEach(t => {
+  [['✅','Rutinitas','rutin'],['⭐','Bintang','bintang'],['📖','Cerita','daftarcerita'],['➕','Lainnya','more']].forEach(t => {
     const b = document.createElement('button');
     b.innerHTML = '<span class="se">' + t[0] + '</span>' + esc(t[1]);
     b.onclick = () => {
@@ -679,6 +711,7 @@ VIEWS.more = (v) => {
     ['🧮','Berhitung (sentuh)','t4','hitung', true],
     ['🃏','Cocokkan Kartu','t6','cocok', true],
     ['✏️','Menggambar & Latihan','t1','gambar', true],
+    ['📖','Cerita Pendek','t5','daftarcerita', true],
     ['🏠','Cari Benda di Rumah','t7','cari', true],
     ['🧠','Tebak-tebakan','t6','kuis', true],
     ['🎁','Daftar Hadiah','t3','hadiah', true]
@@ -1107,6 +1140,186 @@ function cariSelesai(v){
   lagi.className = 'btn'; lagi.textContent = '🔁 Cari lagi';
   lagi.onclick = cariMulai;
   v.appendChild(lagi);
+  const home = document.createElement('button');
+  home.className = 'btn ghost sm'; home.textContent = '🏠 Kembali ke beranda';
+  home.onclick = goHome;
+  v.appendChild(home);
+}
+
+/* ================= CERITA PENDEK (dibaca bersama, suasana tenang) ================= */
+/* Untuk menjelang tidur: teks sedikit, gambar besar, satu pertanyaan yang bisa
+   disentuh, dan penutup tenang (tanpa perayaan ramai / suara nyaring).
+   Teks memakai {nama} supaya anak merasa ceritanya tentang dirinya. */
+const CERITA = [
+  { id:'bola', judul:'Bola Merah', em:'⚽', halaman:[
+    { t:'{nama} punya bola merah.', em:'⚽' },
+    { t:'Bola itu menggelinding ke kebun.', em:'🌳' },
+    { t:'Mana bola merahnya?', pilihan:['⚽','🍎','🐱'], benar:'⚽' },
+    { t:'Bola berhenti di dekat pohon.', em:'🌳' },
+    { t:'Ayo bawa bola itu pulang.', em:'🏠' },
+    { t:'{nama} memeluk bolanya. Bola itu senang.', em:'🤗' }
+  ]},
+  { id:'kucing', judul:'Kucing Kecil', em:'🐱', halaman:[
+    { t:'Ada kucing kecil di depan rumah.', em:'🐱' },
+    { t:'Kucing itu mengeong. Meong… meong…', em:'😿' },
+    { t:'Mana kucingnya?', pilihan:['🐱','🐟','🐦'], benar:'🐱' },
+    { t:'Kucing itu lapar. Ayo beri susu.', em:'🥛' },
+    { t:'Kucing minum sampai habis.', em:'😺' },
+    { t:'Terima kasih, {nama}. Kucing itu tidur.', em:'😴' }
+  ]},
+  { id:'bintang', judul:'Bintang Malam', em:'🌟', halaman:[
+    { t:'Malam sudah datang. Langit menjadi gelap.', em:'🌙' },
+    { t:'{nama} melihat ke langit. Ada banyak bintang.', em:'✨' },
+    { t:'Mana bulannya?', pilihan:['🌙','☀️','🌈'], benar:'🌙' },
+    { t:'Ayo hitung bintangnya. Satu… dua… tiga.', em:'⭐' },
+    { t:'Bintang berkedip. Kelip… kelip…', em:'✨' },
+    { t:'Selamat tidur, {nama}. Besok kita bermain lagi.', em:'😴' }
+  ]},
+  { id:'kuncup', judul:'Kuncup Menanam', em:'🌱', halaman:[
+    { t:'Kuncup punya satu biji kecil.', em:'🌱' },
+    { t:'Biji itu ditanam di tanah.', em:'🪴' },
+    { t:'Mana air untuk menyiram?', pilihan:['💧','🔥','🪨'], benar:'💧' },
+    { t:'Kuncup menyiram bijinya setiap hari.', em:'💧' },
+    { t:'Tumbuh tunas kecil! Hore!', em:'🌿' },
+    { t:'{nama} ikut menyiram. Besok tumbuh bunga.', em:'🌸' }
+  ]}
+];
+
+const CER = { id:null, i:0, benar:0, bintang:0 };
+
+function modeTenang(on){
+  try { document.body.classList.toggle('tenang', !!on); } catch (e) {}
+}
+function ceritaPilihan(){
+  const lv = Number(S.set().level) || 1;
+  return lv <= 1 ? 2 : lv === 2 ? 3 : 4;
+}
+function ceritaRiwayat(){
+  const r = LS.get('af_cerita', null);
+  return (r && typeof r === 'object') ? r : {};
+}
+function ceritaTandai(id){
+  const r = ceritaRiwayat();
+  r[id] = (Number(r[id]) || 0) + 1;
+  LS.set('af_cerita', r);
+}
+function isiNama(t){ return String(t).replace(/\{nama\}/g, S.name()); }
+function ceritaBuka(id){
+  CER.id = id; CER.i = 0; CER.benar = 0; CER.bintang = 0;
+  render('cerita', true);
+}
+
+VIEWS.daftarcerita = (v) => {
+  setTitle('Cerita Pendek');
+  const p = document.createElement('p'); p.className = 'prog-note';
+  p.textContent = 'Bacakan bersama anak, lalu sentuh "Lanjut". Layar otomatis menjadi lebih tenang karena cerita ini untuk menjelang tidur.';
+  v.appendChild(p);
+  const r = ceritaRiwayat();
+  const list = document.createElement('div'); list.className = 'cerita-daftar';
+  CERITA.forEach(c => {
+    const b = document.createElement('button');
+    const kali = Number(r[c.id]) || 0;
+    b.innerHTML = '<span class="ce">' + c.em + '</span><span><span class="ct">' + esc(c.judul) + '</span>' +
+      '<span class="cs">' + c.halaman.length + ' halaman' + (kali ? ' • sudah dibaca ' + kali + ' kali' : '') + '</span></span>';
+    b.onclick = () => { pop(); ceritaBuka(c.id); };
+    list.appendChild(b);
+  });
+  v.appendChild(list);
+};
+
+VIEWS.cerita = (v) => {
+  const c = CERITA.find(x => x.id === CER.id);
+  if (!c) { goHome(); return; }
+  const hal = c.halaman[CER.i];
+  if (!hal) { ceritaSelesai(v); return; }
+  setTitle(c.judul);
+
+  const kartu = document.createElement('div'); kartu.className = 'cerita-kartu'; kartu.id = 'ceritaKartu';
+  kartu.innerHTML = '<div class="cerita-em">' + (hal.em || (hal.pilihan ? '🤔' : '📖')) + '</div>' +
+    '<div class="cerita-teks">' + esc(isiNama(hal.t)) + '</div>';
+  v.appendChild(kartu);
+
+  const pil = document.createElement('div'); pil.className = 'cerita-pil';
+  c.halaman.forEach((_, i) => {
+    const d = document.createElement('i');
+    if (i === CER.i) d.className = 'on';
+    pil.appendChild(d);
+  });
+  v.appendChild(pil);
+
+  const bacakan = document.createElement('button');
+  bacakan.className = 'btn ghost sm'; bacakan.id = 'ceritaBaca';
+  bacakan.textContent = '🔊 Bacakan';
+  bacakan.onclick = () => { pop(); say(A.cerita(c.id, CER.i + 1), isiNama(hal.t), 'id-ID', 0.82); };
+  v.appendChild(bacakan);
+
+  if (hal.pilihan) {
+    const opsi = document.createElement('div'); opsi.className = 'pilih-cerita'; opsi.id = 'ceritaOpsi';
+    const jml = Math.max(2, Math.min(ceritaPilihan(), hal.pilihan.length));
+    const lain = hal.pilihan.filter(x => x !== hal.benar).sort(() => Math.random() - 0.5).slice(0, jml - 1);
+    const pilih = [hal.benar].concat(lain).sort(() => Math.random() - 0.5);
+    pilih.forEach(o => {
+      const b = document.createElement('button');
+      b.textContent = o;
+      b.onclick = () => jawabCerita(o, hal.benar, b);
+      opsi.appendChild(b);
+    });
+    v.appendChild(opsi);
+  } else {
+    const lanjut = document.createElement('button');
+    lanjut.className = 'btn green'; lanjut.id = 'ceritaLanjut';
+    lanjut.textContent = CER.i >= c.halaman.length - 1 ? 'Selesai ✨' : 'Lanjut →';
+    lanjut.onclick = () => { pop(); CER.i++; render('cerita', false); };
+    v.appendChild(lanjut);
+  }
+
+  const keluar = document.createElement('button');
+  keluar.className = 'btn ghost sm'; keluar.id = 'ceritaKeluar';
+  keluar.textContent = '📖 Daftar cerita';
+  keluar.onclick = () => { stopAudio(); render('daftarcerita', true); };
+  v.appendChild(keluar);
+
+  if (CER.i === 0) later(() => say(A.cerita(c.id, 1), isiNama(hal.t), 'id-ID', 0.82), 600);
+};
+
+function jawabCerita(pilih, benar, btn){
+  const opsi = $('#ceritaOpsi'); if (!opsi) return;
+  if (pilih === benar) {
+    btn.classList.add('benar');
+    S.record('cerita', true);
+    tone(660, 0, .18, .09); tone(880, .12, .22, .09);
+    flyStar(btn);
+    say(null, 'Benar!');
+    Array.from(opsi.children).forEach(b => { b.disabled = true; });
+    later(() => { CER.i++; render('cerita', false); }, 1300);
+  } else {
+    btn.classList.add('coba');
+    S.record('cerita', false);
+    tone(330, 0, .2, .07);
+    say(null, 'Coba lagi ya, sayang');
+    later(() => btn.classList.remove('coba'), 500);
+  }
+}
+
+function ceritaSelesai(v){
+  const c = CERITA.find(x => x.id === CER.id);
+  setTitle('Cerita Selesai');
+  if (c && CER.bintang === 0) { CER.bintang = 1; S.addStars(1); ceritaTandai(c.id); }
+  const w = document.createElement('div'); w.className = 'starwrap';
+  w.innerHTML = '<div class="bigstar">🌙</div>' +
+    '<div class="cerita-teks">' + esc(isiNama('Selamat tidur, {nama}.')) + '</div>' +
+    (c ? '<p class="prog-note">Cerita "' + esc(c.judul) + '" sudah selesai. +1 ⭐</p>' : '');
+  v.appendChild(w);
+  tone(523, 0, .3, .08); tone(392, .22, .5, .07);
+  say(null, 'Selamat tidur, ' + S.name() + '. Terima kasih sudah membaca.');
+  const lagi = document.createElement('button');
+  lagi.className = 'btn'; lagi.id = 'ceritaLagi'; lagi.textContent = '🔁 Baca lagi';
+  lagi.onclick = () => { if (c) ceritaBuka(c.id); else render('daftarcerita', true); };
+  v.appendChild(lagi);
+  const lain = document.createElement('button');
+  lain.className = 'btn ghost sm'; lain.textContent = '📖 Cerita lain';
+  lain.onclick = () => render('daftarcerita', true);
+  v.appendChild(lain);
   const home = document.createElement('button');
   home.className = 'btn ghost sm'; home.textContent = '🏠 Kembali ke beranda';
   home.onclick = goHome;
@@ -1649,7 +1862,7 @@ function pTabUmum(box){
 
 function pTabProgres(box){
   const p = S.prog();
-  const names = { huruf:'Huruf', angka:'Angka', hijaiyah:'Hijaiyah', hitung:'Berhitung', cocok:'Mencocokkan', gambar:'Menggambar', bentuk:'Bentuk & Warna' };
+  const names = { huruf:'Huruf', angka:'Angka', hijaiyah:'Hijaiyah', hitung:'Berhitung', cocok:'Mencocokkan', gambar:'Menggambar', bentuk:'Bentuk & Warna', cari:'Cari Benda', cerita:'Cerita' };
   const rows = Object.keys(names).map(k => {
     const e = p[k]; if (!e || !e.attempts) return '';
     const acc = Math.round((e.correct / e.attempts) * 100);

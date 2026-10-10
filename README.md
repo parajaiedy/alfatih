@@ -24,6 +24,7 @@ rutinitas harian, papan bintang dan hadiah, serta catatan tumbuh kembang.
 | Kegiatan Lain → Cocokkan Kartu | Memori kecil 4 pasang |
 | Kegiatan Lain → Menggambar & Latihan | Kanvas untuk mencoret/menjiplak huruf (latihan bermain, bukan penilaian tulisan) |
 | Belajar Sendiri | Kuis: aplikasi menyebut, anak memilih (dapat 1 bintang per jawaban benar) |
+| Cerita Pendek | 4 cerita dibaca bersama menjelang tidur: teks pendek, gambar besar, satu pertanyaan yang bisa disentuh (2 pilihan untuk usia 3), dan **layar otomatis jadi lebih redup/tenang**. Memakai nama anak di dalam cerita |
 | Cari Benda di Rumah | Anak mencari benda **nyata** di rumah (warna, bentuk, sifat, fungsi). Layar hanya memberi tantangan — belajar sambil bergerak. Ada tombol "Ganti" agar anak tidak pernah macet |
 | Rutinitas Hari Ini | 12 kartu kegiatan; selesai = 1 bintang |
 | Papan Bintang | Hitung bintang, target (bawaan 10), tukar hadiah. Tombol peluk selalu tersedia tanpa bintang |
@@ -73,6 +74,7 @@ Mohon diperiksa Ayah/Ibu atau guru ngaji; aplikasi ini tidak mengklaim sudah ses
 - `tools/generate_voice.py` — pembuat suara ElevenLabs (`--check` untuk memeriksa kunci & kuota, `--list` untuk melihat suara)
 - `tests/static.test.cjs` — pemeriksaan statis
 - `tests/cari.runtime.cjs` — uji perilaku mode Cari Benda (butuh Chrome headless port 9241)
+- `tests/cerita.runtime.cjs` — uji perilaku Cerita Pendek (butuh Chrome headless port 9241)
 - `REFERENCES.md` — sumber rujukan desain & apa yang diadaptasi
 
 ## Menjalankan uji

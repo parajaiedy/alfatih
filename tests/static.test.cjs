@@ -71,5 +71,43 @@ test('cari benda tidak meminta izin kamera/mikrofon', () => {
   mustNot(/getUserMedia|MediaDevices/, 'camera/mic access requested (privacy)');
 });
 
+/* ---------- Cerita Pendek dibaca bersama (TDD: uji dulu, fitur menyusul) ---------- */
+const bagianCerita = () => {
+  const m = html.match(/CERITA PENDEK \(dibaca bersama[\s\S]*?(?=\/\* =+ [A-Z])/);
+  if (!m) throw new Error('bagian cerita tidak ditemukan');
+  return m[0];
+};
+test('cerita pendek ada', () => must(/VIEWS\.cerita\s*=/, 'missing VIEWS.cerita'));
+test('cerita dapat dibuka dari beranda', () => must(/'daftarcerita'/, 'not reachable from home'));
+test('ada beberapa cerita', () => {
+  must(/const CERITA = \[/, 'missing CERITA bank');
+  const m = html.match(/const CERITA = \[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('CERITA bank tidak terbaca');
+  const n = (m[1].match(/\bid\s*:/g) || []).length;
+  if (n < 4) throw new Error('cerita terlalu sedikit: ' + n);
+});
+test('cerita memakai nama anak (personalisasi)', () => must(/\{nama\}/, 'no personalization token'));
+test('cerita punya pertanyaan yang bisa disentuh', () => must(/pilihan\s*:/, 'no tappable question'));
+test('jumlah pilihan mengikuti tingkat (2 untuk usia 3)', () => must(/function ceritaPilihan/, 'missing choice limiter'));
+test('ada suasana tenang menjelang tidur', () => {
+  must(/function modeTenang/, 'missing modeTenang');
+  must(/body\.tenang/, 'no calm-mode CSS');
+});
+test('cerita tidak memakai perayaan ramai (menjelang tidur)', () => {
+  const b = bagianCerita();
+  if (/confetti\(/.test(b)) throw new Error('cerita memakai confetti');
+  if (/fanfare\(/.test(b)) throw new Error('cerita memakai fanfare nyaring');
+});
+test('cerita mencatat progres & riwayat', () => {
+  must(/record\('cerita'/, 'no skill progress');
+  must(/'af_cerita'/, 'no story history key');
+});
+test('suara cerita memakai nama berkas sendiri', () => must(/cerita_/, 'missing story audio prefix'));
+test('cerita tidak memakai kata menghukum', () => {
+  const b = bagianCerita();
+  if (/Salah!|Bodoh/i.test(b)) throw new Error('punitive wording in stories');
+});
+test('progres cerita muncul di panel orang tua', () => must(/cerita:'Cerita'/, 'skill label missing'));
+
 console.log('\n' + pass + ' lulus, ' + fail + ' gagal');
 process.exit(fail ? 1 : 0);
