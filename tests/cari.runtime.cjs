@@ -5,8 +5,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const CDP = '127.0.0.1:9241';
-const BASE = process.argv[2] || 'http://127.0.0.1:8899/index.html';
+const CDP = process.argv[3] || '127.0.0.1:9241';   // port CDP (agar lokal & live tidak tertukar)
+const BASE = process.argv[2] || 'http://127.0.0.1:8899/index.html';   // alamat yang diuji
 const ORIGIN = new URL(BASE).origin;
 const SHOTS = path.join(__dirname, '..', 'screenshot', 'uji');
 fs.mkdirSync(SHOTS, { recursive: true });
