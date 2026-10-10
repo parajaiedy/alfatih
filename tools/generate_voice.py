@@ -18,7 +18,7 @@ ENV  = r"C:\Users\ASUS\AppData\Local\hermes\.env"
 API  = "https://api.elevenlabs.io/v1"
 MODEL = os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")
 # suara: bisa diganti lewat variabel ELEVENLABS_VOICE_ID
-VOICE_PREF = ["Sarah", "Charlotte", "Lily", "Alice", "Jessica", "Matilda", "Rachel", "Nila"]
+VOICE_PREF = ["Jessica", "Alice", "Matilda", "Bella", "Lily", "Sarah", "Charlotte"]
 
 LETTERS = [("a","A untuk Apel"),("b","B untuk Bola"),("c","C untuk Cicak"),("d","D untuk Domba"),
  ("e","E untuk Ember"),("f","F untuk Foto"),("g","G untuk Gajah"),("h","H untuk Harimau"),
@@ -84,22 +84,33 @@ def minta(url, kunci, data=None, metode=None):
     with urllib.request.urlopen(req, timeout=120) as r:
         return r.read()
 
+def daftar_suara(kunci):
+    return json.loads(minta(API + "/voices", kunci).decode("utf-8")).get("voices", [])
+
 def pilih_suara(kunci):
+    """Pilih suara yang BOLEH dipakai lewat API.
+
+    Penting: paket Free TIDAK boleh memakai 'library voice' (suara komunitas)
+    lewat API -> error 402. Jadi hanya kategori 'premade' yang dipakai.
+    """
     vid = os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
     if vid:
         return vid
-    daftar = json.loads(minta(API + "/voices", kunci).decode("utf-8")).get("voices", [])
+    daftar = daftar_suara(kunci)
+    premade = [v for v in daftar if str(v.get("category", "")).lower() == "premade"]
+    if not premade:
+        raise SystemExit("Tidak ada suara 'premade' di akun ini. Buat/pilih suara bawaan dulu di elevenlabs.io.")
+    # utamakan nama yang cocok, lalu yang berbahasa Indonesia, lalu yang pertama
     for nama in VOICE_PREF:
-        for v in daftar:
-            if v.get("name", "").lower() == nama.lower():
+        for v in premade:
+            # nama dari API berbentuk "Jessica - Playful, Bright, Warm"
+            if v.get("name", "").lower().startswith(nama.lower()):
                 return v["voice_id"]
-    for v in daftar:
+    for v in premade:
         lbl = v.get("labels") or {}
         if str(lbl.get("language", "")).lower() in ("id", "indonesian"):
             return v["voice_id"]
-    if not daftar:
-        raise SystemExit("Tidak ada suara di akun ElevenLabs ini.")
-    return daftar[0]["voice_id"]
+    return premade[0]["voice_id"]
 
 def tulis_mp3(teks, path, kunci, voice_id):
     body = {"text": teks, "model_id": MODEL,
@@ -174,8 +185,10 @@ def main():
     if "--check" in sys.argv:
         return 0 if cek_kunci(kunci) else 1
     if "--list" in sys.argv:
-        for v in json.loads(minta(API + "/voices", kunci).decode("utf-8")).get("voices", []):
-            print(v.get("voice_id"), "-", v.get("name"), "-", (v.get("labels") or {}))
+        for v in daftar_suara(kunci):
+            kat = str(v.get("category", "")).lower()
+            tanda = "BOLEH" if kat == "premade" else "tidak boleh (paket Free)"
+            print("%-26s %-12s %-8s %-28s %s" % (v.get("voice_id"), v.get("name"), kat, tanda, (v.get("labels") or {})))
         return 0
     os.makedirs(OUT, exist_ok=True)
     voice_id = pilih_suara(kunci)

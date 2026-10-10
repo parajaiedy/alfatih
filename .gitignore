@@ -1,3 +1,5 @@
 screenshot/
 *.bak
 __pycache__/
+tools/riwayat_suara.txt
+tools/kunci.txt
