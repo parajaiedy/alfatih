@@ -64,7 +64,7 @@ async function connect(url) {
 
   // semua nama yang diminta ada
   const teks = await ev('document.querySelectorAll(".nama-grid .nt") ? Array.from(document.querySelectorAll(".nama-grid .nt")).map(e=>e.textContent).join("|") : ""');
-  const wajib = ['Fatimah','Ibrahim','Zainab','Mikail','Al Fatih','Aina','Miss Iis','Mami','Dady','Mama Hamzy','Puang Mama','Puang PP','Ayag','Ibu','Puang Cali','Alsya','Onty Tety','Tante Raoda'];
+  const wajib = ['Fatimah','Ibrahim','Zainab','Mikail','Al Fatih','Aina','Miss Iis','Mami','Dady','Mama Hamzy','Puang Mama','Puang Papa','Ayag','Ibu','Puang Cali','Alsya','Aunty Tety','Tante Raoda'];
   const hilang = wajib.filter(n => teks.indexOf(n) < 0);
   ok('semua nama yang diminta tampil', hilang.length === 0, 'hilang: ' + hilang.join(','));
 
@@ -80,11 +80,23 @@ async function connect(url) {
 
   // nama dengan spasi & huruf besar (uji slug)
   await ev('closeOverlay(); render("nama", false)'); await sleep(500);
-  await ev('(()=>{const b=Array.from(document.querySelectorAll(".nama-grid button")).find(x=>x.textContent.indexOf("Puang PP")>=0); b.click();})()');
+  await ev('(()=>{const b=Array.from(document.querySelectorAll(".nama-grid button")).find(x=>x.textContent.indexOf("Puang Papa")>=0); b.click();})()');
   await sleep(1400);
   const a2 = JSON.parse(await ev('JSON.stringify({t:AUD.el?Number(AUD.el.currentTime.toFixed(2)):null, src:AUD.el?AUD.el.src.split("/").pop():null, err:AUD.el&&AUD.el.error?AUD.el.error.code:null})'));
   ok('nama berhuruf besar & berspasi berbunyi', a2.t > 0 && a2.err === null, JSON.stringify(a2));
-  ok('slug benar untuk "Puang PP"', a2.src === 'nama_puang_pp.mp3', 'src=' + a2.src);
+  ok('slug benar untuk "Puang Papa"', a2.src === 'nama_puang_papa.mp3', 'src=' + a2.src);
+
+  // tiga nama yang diperbaiki harus berbunyi dengan berkas yang benar
+  const cek = async (nama, berkas) => {
+    await ev('closeOverlay(); render("nama", false)'); await sleep(450);
+    await ev('(()=>{const b=Array.from(document.querySelectorAll(".nama-grid button")).find(x=>x.textContent.indexOf(' + JSON.stringify(nama) + ')>=0); if(b) b.click();})()');
+    await sleep(1400);
+    const a = JSON.parse(await ev('JSON.stringify({t:AUD.el?Number(AUD.el.currentTime.toFixed(2)):null, src:AUD.el?AUD.el.src.split("/").pop():null, err:AUD.el&&AUD.el.error?AUD.el.error.code:null})'));
+    ok(nama + ' berbunyi dengan berkas benar', a.t > 0 && a.err === null && a.src === berkas, JSON.stringify(a));
+  };
+  await cek('Mama Hamzy', 'nama_mama_hamzy.mp3');
+  await cek('Aunty Tety', 'nama_aunty_tety.mp3');
+  await ev('closeOverlay(); render("nama", false)'); await sleep(400);
 
   await ev('closeOverlay(); render("nama", false)'); await sleep(400);
   ok('kembali ke papan nama setelah ditutup', (await ev('document.querySelectorAll(".nama-grid button").length')) === 18);

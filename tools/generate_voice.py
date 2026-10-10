@@ -39,11 +39,12 @@ HIJAIYAH_AR = ["أَلِف","بَاء","تَاء","ثَاء","جِيم","حَا�
 # Nama orang yang dikenal anak. Kunci audio memakai "slug" agar tidak tertukar
 # walau urutannya diubah. Bila ada nama yang salah dengar, cukup isi NAMA_UCAP
 # dengan cara bacanya, lalu jalankan ulang dengan --force.
-NAMA = ["Al Fatih","Mami","Dady","Ibu","Ayag","Mama Hamzy","Puang Mama","Puang PP",
- "Puang Cali","Onty Tety","Tante Raoda","Fatimah","Zainab","Aina","Alsya","Ibrahim",
+NAMA = ["Al Fatih","Mami","Dady","Ibu","Ayag","Mama Hamzy","Puang Mama","Puang Papa",
+ "Puang Cali","Aunty Tety","Tante Raoda","Fatimah","Zainab","Aina","Alsya","Ibrahim",
  "Mikail","Miss Iis"]
 NAMA_UCAP = {
- "Puang PP": "Puang Pe Pe",
+ # "Mama Hamzy" ditulis Hamzy tetapi dibaca Hamzi (ejaan Indonesia)
+ "Mama Hamzy": "Mama Hamzi",
 }
 # Nama anak untuk mengisi {nama} di dalam suara cerita. Ganti bila nama anak berbeda,
 # lalu jalankan ulang pembuat suara (hanya klip cerita yang perlu diperbarui).
@@ -177,10 +178,10 @@ CERITA = [
    {"t":"Mana ayunannya?"},{"t":"Mikail bergantian dengan Ibrahim."},{"t":"{nama} menunggu giliran dengan sabar."},
    {"t":"Pulang dengan hati senang."}]},
  {"id":"puangmama","halaman":[{"t":"Ada tamu datang hari ini."},{"t":"Puang Mama datang membawa buah."},
-   {"t":"Mana buahnya?"},{"t":"Puang PP ikut datang. Dia tersenyum."},
+   {"t":"Mana buahnya?"},{"t":"Puang Papa ikut datang. Dia tersenyum."},
    {"t":"Puang Cali juga datang. Rumah jadi ramai."},{"t":"{nama} duduk di dekat mereka. Senang sekali."}]},
  {"id":"masak","halaman":[{"t":"Mami mau memasak hari ini."},{"t":"Mama Hamzy menyiapkan sayurnya."},
-   {"t":"Mana sendoknya?"},{"t":"Onty Tety mengaduk sup di panci."},{"t":"Tante Raoda mencicipi. Enak!"},
+   {"t":"Mana sendoknya?"},{"t":"Aunty Tety mengaduk sup di panci."},{"t":"Tante Raoda mencicipi. Enak!"},
    {"t":"{nama} membantu menata meja makan."}]}
 ]
 

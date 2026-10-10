@@ -116,7 +116,7 @@ test('daftar nama berisi orang yang diminta', () => {
   const m = html.match(/const NAMA = \[([\s\S]*?)\n\];/);
   if (!m) throw new Error('NAMA list tidak ada');
   const wajib = ['Fatimah','Ibrahim','Zainab','Mikail','Al Fatih','Aina','Miss Iis','Mami','Dady',
-    'Mama Hamzy','Puang Mama','Puang PP','Ayag','Ibu','Puang Cali','Alsya','Onty Tety','Tante Raoda'];
+    'Mama Hamzy','Puang Mama','Puang Papa','Ayag','Ibu','Puang Cali','Alsya','Aunty Tety','Tante Raoda'];
   wajib.forEach(n => { if (m[1].indexOf("'" + n + "'") < 0) throw new Error('nama hilang: ' + n); });
 });
 test('nama punya kategori (keluarga/teman/guru)', () => {
@@ -148,7 +148,7 @@ test('cerita baru memakai nama teman & keluarga', () => {
   const m = html.match(/const CERITA = \[([\s\S]*?)\n\];/);
   if (!m) throw new Error('CERITA tidak ada');
   const c = m[1];
-  ['Fatimah','Ibrahim','Zainab','Mikail','Aina','Alsya','Miss Iis','Mami','Dady','Puang Mama','Puang PP','Ayag','Ibu','Puang Cali','Onty Tety','Tante Raoda','Mama Hamzy']
+  ['Fatimah','Ibrahim','Zainab','Mikail','Aina','Alsya','Miss Iis','Mami','Dady','Puang Mama','Puang Papa','Ayag','Ibu','Puang Cali','Aunty Tety','Tante Raoda','Mama Hamzy']
     .forEach(n => { if (c.indexOf(n) < 0) throw new Error('nama belum dipakai di cerita: ' + n); });
 });
 test('cerita tetap tanpa perayaan ramai', () => {
