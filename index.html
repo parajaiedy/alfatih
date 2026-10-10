@@ -76,6 +76,7 @@
   .t4{background:linear-gradient(150deg,#CDEBC9,#A6DC9E)}
   .t5{background:linear-gradient(150deg,#E3D6F7,#C9B3EC)}
   .t6{background:linear-gradient(150deg,#FFE1A8,#F7CE7B)}
+  .t7{background:linear-gradient(150deg,#C7E8F5,#9BD4EA)}
   .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
   .strip button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 6px;cursor:pointer;
     font-family:inherit;font-weight:800;font-size:13.5px;color:var(--ink);box-shadow:var(--shadow);display:flex;
@@ -273,6 +274,9 @@ let TIMERS = [];
 function later(fn, ms){ const id = setTimeout(() => { TIMERS = TIMERS.filter(t => t !== id); try { fn(); } catch (e) {} }, ms); TIMERS.push(id); return id; }
 let EVT_HANDLERS = [];
 function onWindow(evt, fn){ window.addEventListener(evt, fn); EVT_HANDLERS.push([evt, fn]); }
+function cleanFx(){
+  try { document.querySelectorAll('.conf,.fly').forEach(e => e.remove()); } catch (e) {}
+}
 function clearTimers(){
   TIMERS.forEach(clearTimeout); TIMERS = [];
   EVT_HANDLERS.forEach(h => { try { window.removeEventListener(h[0], h[1]); } catch (e) {} });
@@ -331,7 +335,7 @@ const SHAPES = [
 ];
 
 /* ---------- pengaturan & keadaan ---------- */
-const DEF_SET = { level:1, mute:false, vol:1, breakMin:10, sessionLen:5 };
+const DEF_SET = { level:1, mute:false, vol:1, breakMin:10, sessionLen:5, cariN:3 };
 const S = {
   name:     () => LS.get('af_name', 'Al Fatih'),
   routines: () => { const r = LS.get('af_routines', DEF_ROUTINES); return Array.isArray(r) && r.length ? r : DEF_ROUTINES; },
@@ -466,7 +470,11 @@ const PH = {
   ayoRutinitas:['Ayo, kegiatan hari ini!','ayo_rutinitas'],
   kumpulkan:['Ayo kumpulkan bintang lagi!','kumpulkan'],
   sesiIntro:['Ayo belajar sebentar. Kita mulai dari yang mudah.','sesi_intro'],
-  sesiSelesai:['Sesi selesai. Hebat sekali hari ini!','sesi_selesai']
+  sesiSelesai:['Sesi selesai. Hebat sekali hari ini!','sesi_selesai'],
+  cariIntro:['Ayo cari benda di rumah! Ayah atau Ibu menemani ya.','cari_intro'],
+  cariKetemu:['Ketemu! Hebat!','cari_ketemu'],
+  cariLagi:['Ayo cari satu lagi!','cari_lagi'],
+  cariSelesai:['Semua sudah ketemu. Hebat sekali!','cari_selesai']
 };
 function ph(key, extra){ const p = PH[key]; if (!p) return; say(A.ph(p[1]), extra || p[0]); }
 
@@ -500,9 +508,9 @@ function flyStar(fromEl){
     s.style.left = (r.left + r.width/2) + 'px'; s.style.top = (r.top + r.height/2) + 'px';
     document.body.appendChild(s);
     requestAnimationFrame(()=>{ s.style.transform = 'translate(-50%,-50%) scale(1.4)'; });
-    later(()=>{ s.style.left = (innerWidth/2)+'px'; s.style.top = '70px';
+    setTimeout(()=>{ s.style.left = (innerWidth/2)+'px'; s.style.top = '70px';
       s.style.transform = 'translate(-50%,-50%) scale(.3)'; s.style.opacity = '.2'; }, 30);
-    later(()=>s.remove(), 1000);
+    setTimeout(()=>s.remove(), 1000);
   } catch (e) {}
 }
 function confetti(){
@@ -513,7 +521,7 @@ function confetti(){
     d.style.left = (Math.random()*94 + 2) + 'vw';
     d.style.animationDelay = (Math.random()*0.6) + 's';
     d.style.fontSize = (22 + Math.random()*22) + 'px';
-    document.body.appendChild(d); later(()=>d.remove(), 2800);
+    document.body.appendChild(d); setTimeout(()=>d.remove(), 2800);
   }
 }
 
@@ -521,7 +529,7 @@ function confetti(){
 let stack = [];
 function setTitle(t){ const el = $('#ttl'); if (el) el.textContent = t; }
 function render(name, push){
-  clearTimers(); stopAudio();
+  clearTimers(); stopAudio(); cleanFx();
   if (push !== false) { if (stack[stack.length-1] !== name) stack.push(name); }
   const v = $('#view'); if (!v) return; v.innerHTML = '';
   (VIEWS[name] || VIEWS.home)(v);
@@ -671,6 +679,7 @@ VIEWS.more = (v) => {
     ['🧮','Berhitung (sentuh)','t4','hitung', true],
     ['🃏','Cocokkan Kartu','t6','cocok', true],
     ['✏️','Menggambar & Latihan','t1','gambar', true],
+    ['🏠','Cari Benda di Rumah','t7','cari', true],
     ['🧠','Tebak-tebakan','t6','kuis', true],
     ['🎁','Daftar Hadiah','t3','hadiah', true]
   ].filter(x => x[4]);
@@ -994,6 +1003,115 @@ VIEWS.gambar = (v) => {
   function setPad(i){ ctx.clearRect(0,0,cv.width,cv.height); under.textContent = pick[i][0]; $('#padLetter', wrap).textContent = pick[i][0]; say(A.letter(i), pick[i][0], 'id-ID', 0.8); }
   say(A.letter(0), pick[0][0], 'id-ID', 0.8);
 };
+
+/* ================= CARI BENDA DI RUMAH (belajar sambil bergerak) ================= */
+/* Anak berkeliling rumah mencari benda nyata; layar hanya memberi tantangan.
+   Tanpa kamera, tanpa mikrofon, tanpa internet. Ayah/Ibu mendampingi. */
+const CARI_BANK = [
+  { k:'warna',  t:'Cari benda berwarna MERAH',  em:'🔴', hint:'misalnya tomat, cabe, atau baju merah' },
+  { k:'warna',  t:'Cari benda berwarna KUNING', em:'🟡', hint:'misalnya pisang atau pensil kuning' },
+  { k:'warna',  t:'Cari benda berwarna HIJAU',  em:'🟢', hint:'misalnya daun atau botol hijau' },
+  { k:'warna',  t:'Cari benda berwarna BIRU',   em:'🔵', hint:'misalnya buku atau gelas biru' },
+  { k:'bentuk', t:'Cari benda yang BULAT',      em:'⚪', hint:'seperti bola, jam dinding, atau telur' },
+  { k:'bentuk', t:'Cari benda yang PERSEGI',    em:'⬛', hint:'seperti kotak, buku, atau bantal' },
+  { k:'bentuk', t:'Cari benda yang PANJANG',    em:'📏', hint:'seperti penggaris, sapu, atau tali' },
+  { k:'sifat',  t:'Cari benda yang LEMBUT',     em:'☁️', hint:'seperti bantal, handuk, atau boneka' },
+  { k:'sifat',  t:'Cari benda yang KASAR',      em:'🧱', hint:'seperti batu, kerikil, atau amplas' },
+  { k:'sifat',  t:'Cari benda yang BESAR',      em:'🐘', hint:'yang paling besar di ruangan ini' },
+  { k:'sifat',  t:'Cari benda yang KECIL',      em:'🐜', hint:'yang mungil, bisa dipegang dua jari' },
+  { k:'fungsi', t:'Cari benda untuk MINUM',     em:'🥤', hint:'gelas atau botol air' },
+  { k:'fungsi', t:'Cari benda untuk TIDUR',     em:'🛏️', hint:'bantal atau selimut' },
+  { k:'fungsi', t:'Cari benda untuk MENULIS',   em:'✏️', hint:'pensil, pena, atau krayon' },
+  { k:'jumlah', t:'Cari 2 benda yang berbunyi', em:'2️⃣', hint:'ketuk pelan, dengar suaranya' },
+  { k:'jumlah', t:'Cari 3 benda yang empuk',    em:'3️⃣', hint:'hitung sampai tiga ya' }
+];
+const CARI = { list:[], i:0, found:0 };
+
+function cariJumlah(){
+  const n = Number(S.set().cariN);
+  return (isFinite(n) && n >= 1) ? Math.min(6, Math.floor(n)) : 3;
+}
+function cariIsi(){
+  const n = cariJumlah();
+  const pool = CARI_BANK.slice().sort(() => Math.random() - 0.5);
+  CARI.list = pool.slice(0, Math.min(n, pool.length));
+  CARI.i = 0; CARI.found = 0;
+}
+function cariMulai(){ cariIsi(); render('cari', true); }
+VIEWS.cari = (v) => {
+  setTitle('Cari Benda di Rumah');
+  if (!CARI.list.length) cariIsi();
+  const c = CARI.list[CARI.i];
+  if (!c) { cariSelesai(v); return; }
+
+  const p = document.createElement('p'); p.className = 'prog-note';
+  p.textContent = 'Ayah/Ibu menemani. Cari bendanya di rumah, lalu sentuh "Sudah ketemu!". Kalau sulit, sentuh "Ganti".';
+  v.appendChild(p);
+
+  const top = document.createElement('div'); top.className = 'kuis-top';
+  top.innerHTML = '<span class="pill">Tantangan ' + (CARI.i+1) + '/' + CARI.list.length + '</span>' +
+                  '<span class="pill">✅ ' + CARI.found + '</span>';
+  v.appendChild(top);
+
+  const bar = document.createElement('div'); bar.className = 'bar';
+  bar.innerHTML = '<i style="width:' + Math.round(CARI.i / Math.max(1, CARI.list.length) * 100) + '%"></i>';
+  v.appendChild(bar);
+
+  const card = document.createElement('div'); card.className = 'kuis-q'; card.id = 'cariCard';
+  card.innerHTML = '<div style="font-size:clamp(56px,20vw,92px);line-height:1">' + c.em + '</div>' +
+    '<div class="qq" style="margin-top:6px">' + esc(c.t) + '</div>' +
+    '<div class="qh">' + esc(c.hint) + '</div>';
+  v.appendChild(card);
+
+  const ulang = document.createElement('button');
+  ulang.className = 'btn ghost sm'; ulang.textContent = '🔊 Ulangi tantangan';
+  ulang.onclick = () => { pop(); say(null, c.t + '. ' + c.hint); };
+  v.appendChild(ulang);
+
+  const ketemu = document.createElement('button');
+  ketemu.className = 'btn green'; ketemu.id = 'cariKetemu';
+  ketemu.textContent = '✅ Sudah ketemu!';
+  ketemu.onclick = () => {
+    CARI.found++;
+    S.record('cari', true); S.addStars(1);
+    chime(); confetti(); flyStar(ketemu);
+    toast('Hebat! +1 ⭐');
+    ph('cariKetemu');
+    ulang.disabled = true; ketemu.disabled = true;
+    later(() => { CARI.i++; render('cari', false); }, 1300);
+  };
+  v.appendChild(ketemu);
+
+  const ganti = document.createElement('button');
+  ganti.className = 'btn ghost sm'; ganti.id = 'cariGanti';
+  ganti.textContent = '🔁 Ganti tantangan';
+  ganti.onclick = () => { pop(); CARI.i++; render('cari', false); };
+  v.appendChild(ganti);
+
+  const stop = document.createElement('button');
+  stop.className = 'btn ghost sm'; stop.textContent = 'Selesai dulu';
+  stop.onclick = () => { stopAudio(); goHome(); };
+  v.appendChild(stop);
+
+  say(null, c.t + '. ' + c.hint);
+};
+function cariSelesai(v){
+  setTitle('Selesai Mencari');
+  const w = document.createElement('div'); w.className = 'starwrap';
+  w.innerHTML = '<div class="bigstar">' + (CARI.found > 0 ? '🏆' : '🌱') + '</div>' +
+    '<div class="starcount">' + CARI.found + '/' + Math.max(1, CARI.list.length) + '</div>' +
+    '<p>' + (CARI.found > 0 ? 'Hebat! Kamu sudah menemukan ' + CARI.found + ' benda.' : 'Tidak apa-apa. Ayo coba lagi nanti.') + '</p>';
+  v.appendChild(w);
+  if (CARI.found > 0) { confetti(); fanfare(); ph('cariSelesai'); }
+  const lagi = document.createElement('button');
+  lagi.className = 'btn'; lagi.textContent = '🔁 Cari lagi';
+  lagi.onclick = cariMulai;
+  v.appendChild(lagi);
+  const home = document.createElement('button');
+  home.className = 'btn ghost sm'; home.textContent = '🏠 Kembali ke beranda';
+  home.onclick = goHome;
+  v.appendChild(home);
+}
 
 /* ================= SESI BELAJAR SINGKAT ================= */
 const SES = { steps:[], i:0, correct:0, attempts:0, doneFlag:false };
@@ -1501,9 +1619,18 @@ function pTabUmum(box){
     '<p class="hint" style="margin:0 0 8px">Aplikasi mengingatkan anak istirahat setelah bermain sekian menit (0 = mati).</p>' +
     '<div class="field"><input type="number" id="pBreak" min="0" max="60" value="' + (Number(s.breakMin)||0) + '">' +
     '<button id="pBreakSave" class="ok">Simpan (menit)</button></div>' +
+    '<h3>Cari Benda di Rumah</h3>' +
+    '<p class="hint" style="margin:0 0 8px">Berapa tantangan setiap kali bermain (1-6). Anak mencari benda nyata di rumah, jadi tidak perlu layar terus.</p>' +
+    '<div class="field"><input type="number" id="pCariN" min="1" max="6" value="' + cariJumlah() + '">' +
+    '<button id="pCariSave" class="ok">Simpan</button></div>' +
     '<h3>Bintang &amp; catatan cepat</h3>' +
     '<button class="btn ghost sm" id="pResetStars">↺ Nolkan bintang (sekarang ' + S.stars() + ')</button>' +
     '<button class="btn ghost sm" id="pResetDay">↺ Kosongkan tanda kegiatan hari ini</button>';
+  $('#pCariSave').onclick = () => {
+    const n = Math.max(1, Math.min(6, Number($('#pCariN').value) || 3));
+    const s2 = S.set(); s2.cariN = n; S.saveSet(s2);
+    $('#pCariN').value = n; toast('Tantangan cari: ' + n);
+  };
   $('#pNameSave').onclick = () => { const n = $('#pName').value.trim(); if (!n) return toast('Nama belum diisi');
     LS.set('af_name', n.slice(0,40)); toast('Nama disimpan'); };
   $$('#pLevel button').forEach(b => { b.onclick = () => {

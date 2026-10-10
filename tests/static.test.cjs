@@ -52,5 +52,24 @@ test('rentang kuis angka memakai 1..batas (tidak ada bug 0-19)', () => {
 });
 test('tidak ada aset eksternal (tetap offline)', () => mustNot(/https?:\/\/(?!www\.w3\.org)/, 'external URL found'));
 
+/* ---------- Mode Cari Benda di Rumah (TDD: uji dulu, fitur menyusul) ---------- */
+test('mode cari benda ada', () => must(/VIEWS\.cari\s*=/, 'missing VIEWS.cari'));
+test('cari benda dapat dibuka dari Kegiatan Lain', () => must(/'cari'/, 'not reachable from menu'));
+test('cari benda punya tombol "sudah ketemu" dan jalan keluar "ganti"', () => {
+  must(/Sudah ketemu/i, 'missing found button');
+  must(/Ganti/i, 'missing skip/change control (child must never be stuck)');
+});
+test('cari benda mencatat progres keterampilan', () => must(/record\(\s*'cari'/, 'no skill progress recorded'));
+test('cari benda tidak memakai kata menghukum', () => mustNot(/Salah!|Bodoh/i, 'punitive wording found'));
+test('tantangan cari benda mencakup warna, bentuk dan sifat benda', () => {
+  must(/CARI_BANK/, 'missing challenge bank');
+  ['merah','bulat','lembut'].forEach(w => must(new RegExp(w, 'i'), 'missing category word: ' + w));
+});
+test('jumlah tantangan cari benda dapat diatur orang tua', () => must(/cariN|cariJumlah/, 'no parent setting for challenge count'));
+test('cari benda memakai frasa suara sendiri', () => must(/cari_intro/, 'missing audio phrase name'));
+test('cari benda tidak meminta izin kamera/mikrofon', () => {
+  mustNot(/getUserMedia|MediaDevices/, 'camera/mic access requested (privacy)');
+});
+
 console.log('\n' + pass + ' lulus, ' + fail + ' gagal');
 process.exit(fail ? 1 : 0);

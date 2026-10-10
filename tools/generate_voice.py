@@ -55,6 +55,10 @@ FRASA = {
  "kumpulkan":  "Ayo kumpulkan bintang lagi!",
  "sesi_intro": "Ayo belajar sebentar. Kita mulai dari yang mudah.",
  "sesi_selesai": "Sesi selesai. Hebat sekali hari ini!",
+ "cari_intro": "Ayo cari benda di rumah! Ayah atau Ibu menemani ya.",
+ "cari_ketemu": "Ketemu! Hebat!",
+ "cari_lagi": "Ayo cari satu lagi!",
+ "cari_selesai": "Semua sudah ketemu. Hebat sekali!",
 }
 
 def baca_kunci():
@@ -62,7 +66,7 @@ def baca_kunci():
     if k:
         return k
     if os.path.exists(ENV):
-        for baris in open(ENV, encoding="utf-8", errors="replace"):
+        for baris in open(ENV, encoding="utf-8-sig", errors="replace"):
             baris = baris.strip()
             if baris.startswith("#") or "=" not in baris:
                 continue
@@ -135,12 +139,40 @@ def daftar_klip():
         out.append(("frasa_%s.mp3" % kunci, teks))
     return out
 
+def cek_kunci(kunci):
+    """Pastikan kunci benar dan lihat sisa kuota sebelum membuat banyak klip."""
+    try:
+        langganan = json.loads(minta(API + "/user/subscription", kunci).decode("utf-8"))
+        pakai = langganan.get("character_count")
+        batas = langganan.get("character_limit")
+        print("Kunci ElevenLabs OK.")
+        if pakai is not None and batas:
+            print("Kuota karakter: %s / %s terpakai (sisa %s)" % (pakai, batas, batas - pakai))
+        tier = langganan.get("tier")
+        if tier:
+            print("Paket:", tier)
+        return True
+    except urllib.error.HTTPError as e:
+        if e.code == 401:
+            print("KUNCI DITOLAK (401). Periksa kembali kunci ElevenLabs-nya.")
+        elif e.code == 403:
+            print("Kunci diterima tetapi tidak punya izin (403).")
+        else:
+            print("Gagal memeriksa kunci: HTTP %s" % e.code)
+        return False
+    except Exception as e:
+        print("Tidak bisa menghubungi ElevenLabs:", e)
+        return False
+
+
 def main():
     kunci = baca_kunci()
     if not kunci:
         print("KUNCI BELUM ADA. Isi baris ELEVENLABS_API_KEY di:")
         print("   " + ENV)
         return 1
+    if "--check" in sys.argv:
+        return 0 if cek_kunci(kunci) else 1
     if "--list" in sys.argv:
         for v in json.loads(minta(API + "/voices", kunci).decode("utf-8")).get("voices", []):
             print(v.get("voice_id"), "-", v.get("name"), "-", (v.get("labels") or {}))

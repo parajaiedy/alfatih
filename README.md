@@ -23,7 +23,8 @@ rutinitas harian, papan bintang dan hadiah, serta catatan tumbuh kembang.
 | Kegiatan Lain → Berhitung | Sentuh satu-satu gambar sambil menghitung |
 | Kegiatan Lain → Cocokkan Kartu | Memori kecil 4 pasang |
 | Kegiatan Lain → Menggambar & Latihan | Kanvas untuk mencoret/menjiplak huruf (latihan bermain, bukan penilaian tulisan) |
-| Kegiatan Lain → Tebak-tebakan | Kuis: aplikasi menyebut, anak memilih (1 bintang per jawaban benar) |
+| Belajar Sendiri | Kuis: aplikasi menyebut, anak memilih (dapat 1 bintang per jawaban benar) |
+| Cari Benda di Rumah | Anak mencari benda **nyata** di rumah (warna, bentuk, sifat, fungsi). Layar hanya memberi tantangan — belajar sambil bergerak. Ada tombol "Ganti" agar anak tidak pernah macet |
 | Rutinitas Hari Ini | 12 kartu kegiatan; selesai = 1 bintang |
 | Papan Bintang | Hitung bintang, target (bawaan 10), tukar hadiah. Tombol peluk selalu tersedia tanpa bintang |
 | Daftar Hadiah | Hadiah dipilih **acak** setiap tukar bintang |
@@ -43,7 +44,7 @@ Bila `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat dan
 di beranda. Volume dan tombol **bisukan** ada di Pengaturan Ayah/Ibu.
 
 Membuat file suara:
-1. Klik dua kali `tools\ISI_KUNCI_dan_BUAT_SUARA.bat` (kunci ElevenLabs dimasukkan di situ, tidak lewat chat).
+1. Klik dua kali `tools\BUAT_SUARA.bat` — muncul kotak: tempel kunci ElevenLabs di situ (kunci tidak lewat chat). Skrip memeriksa kunci dulu, lalu membuat semua klip.
 2. Berkas MP3 muncul di folder `audio\`.
 3. Minta Hermes mengunggah folder `audio/` ke GitHub.
 
@@ -56,7 +57,9 @@ Mohon diperiksa Ayah/Ibu atau guru ngaji; aplikasi ini tidak mengklaim sudah ses
 - `tests/` — uji statis & uji runtime (Chrome headless/CDP)
 - `index_pre_redesign_backup.html` — versi sebelum tata ulang (cadangan aman)
 - `index_v1_backup.html` — versi pertama (cadangan lama)
-- `tools/generate_voice.py` — pembuat suara ElevenLabs
+- `tools/generate_voice.py` — pembuat suara ElevenLabs (`--check` untuk memeriksa kunci & kuota, `--list` untuk melihat suara)
+- `tests/static.test.cjs` — pemeriksaan statis
+- `tests/cari.runtime.cjs` — uji perilaku mode Cari Benda (butuh Chrome headless port 9241)
 - `REFERENCES.md` — sumber rujukan desain & apa yang diadaptasi
 
 ## Menjalankan uji
