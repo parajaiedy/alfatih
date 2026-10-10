@@ -32,7 +32,7 @@ ANGKA = ["nol","satu","dua","tiga","empat","lima","enam","tujuh","delapan","semb
  "delapan belas","sembilan belas","dua puluh"]
 HIJAIYAH = ["Alif","Ba","Ta","Tsa","Jim","Ha","Kha","Dal","Dzal","Ra","Zai","Sin","Syin","Shad",
  "Dhad","Tha","Zha","Ain","Ghain","Fa","Qaf","Kaf","Lam","Mim","Nun","Wau","Ha","Ya"]
-# nama huruf hijaiyah dalam tulisan Arab (untuk suara Arab asli)
+# nama huruf hijaiyah dalam tulisan Arab (untuk varian bunyi Arab; hasilnya suara AI, perlu diperiksa guru)
 HIJAIYAH_AR = ["أَلِف","بَاء","تَاء","ثَاء","جِيم","حَاء","خَاء","دَال","ذَال","رَاء","زَاي","سِين",
  "شِين","صَاد","ضَاد","طَاء","ظَاء","عَين","غَين","فَاء","قَاف","كَاف","لَام","مِيم","نُون","وَاو",
  "هَاء","يَاء"]
@@ -53,6 +53,8 @@ FRASA = {
  "kuis_selesai": "Selesai! Kamu pintar sekali!",
  "ayo_rutinitas": "Ayo, kegiatan hari ini!",
  "kumpulkan":  "Ayo kumpulkan bintang lagi!",
+ "sesi_intro": "Ayo belajar sebentar. Kita mulai dari yang mudah.",
+ "sesi_selesai": "Sesi selesai. Hebat sekali hari ini!",
 }
 
 def baca_kunci():
@@ -157,8 +159,11 @@ def main():
         dibuat += 1
         print("[%d/%d] %s (%d byte)" % (i, len(klip), nama, n))
     berkas = sorted(f for f in os.listdir(OUT) if f.endswith(".mp3"))
+    with open(os.path.join(OUT, "version.txt"), "w", encoding="utf-8") as vf:
+        vf.write(str(int(__import__("time").time())))
     with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as f:
-        json.dump({"dibuat": time.strftime("%Y-%m-%d %H:%M"), "jumlah": len(berkas),
+        json.dump({"version": str(int(__import__("time").time())), "dibuat": time.strftime("%Y-%m-%d %H:%M"),
+                   "jumlah": len(berkas),
                    "suara": voice_id, "model": MODEL, "files": berkas}, f, indent=1)
     print("Selesai. %d klip baru, total %d klip di folder audio." % (dibuat, len(berkas)))
     return 0

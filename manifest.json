@@ -1,13 +1,13 @@
 {
-  "name": "Al Fatih — Belajar, Bintang & Rutinitas",
-  "short_name": "Al Fatih",
-  "description": "Belajar huruf, angka, huruf hijaiyah, rutinitas harian, papan bintang dan hadiah untuk Al Fatih.",
+  "name": "Kebun Belajar Al Fatih",
+  "short_name": "Kebun Belajar",
+  "description": "Aplikasi belajar anak: huruf, angka, hijaiyah, berhitung, mencocokkan, menggambar, rutinitas, bintang. Tanpa iklan, tanpa pelacak, bisa tanpa internet.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0b2545",
-  "theme_color": "#0b2545",
+  "background_color": "#FFF8EE",
+  "theme_color": "#14857A",
   "lang": "id",
   "categories": [
     "education",

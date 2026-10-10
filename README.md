@@ -1,7 +1,8 @@
-# Al Fatih — Aplikasi Belajar & Rutinitas Anak
+# Kebun Belajar Al Fatih — Aplikasi Belajar & Bermain Anak
 
-Aplikasi web (PWA) untuk Al Fatih: belajar huruf, angka, huruf hijaiyah, kuis
-"belajar sendiri", rutinitas harian, papan bintang, hadiah, dan catatan tumbuh kembang.
+Aplikasi web (PWA) untuk Al Fatih (3 tahun): sesi belajar singkat, huruf, angka,
+huruf hijaiyah, berhitung dengan sentuhan, mencocokkan kartu, menggambar/latihan,
+rutinitas harian, papan bintang dan hadiah, serta catatan tumbuh kembang.
 
 **Alamat aplikasi:** https://parajaiedy.github.io/alfatih/
 
@@ -9,41 +10,64 @@ Aplikasi web (PWA) untuk Al Fatih: belajar huruf, angka, huruf hijaiyah, kuis
 1. Buka alamat di atas dengan **Chrome**.
 2. Sentuh menu **titik tiga (⋮)** di kanan atas.
 3. Pilih **"Tambahkan ke layar utama" / "Instal aplikasi"**.
-4. Ikon ⭐ "Al Fatih" muncul di layar HP — bisa dibuka **tanpa internet**.
+4. Ikon muncul di layar HP — bisa dibuka **tanpa internet**.
 
 ## Isi aplikasi
 | Menu | Keterangan |
 |---|---|
-| Belajar Huruf | A–Z, contoh kata + gambar + suara |
+| 🌱 Ayo Belajar Sebentar | Sesi singkat (±5 menit): kenali huruf, kenali angka, berhitung, satu tebak-tebakan |
+| Belajar Huruf | A–Z, contoh kata + gambar + suara (tingkat 1 mulai dari 5 huruf) |
 | Belajar Angka | 1–20, dihitung dengan gambar, dibacakan |
-| Huruf Hijaiyah | 28 huruf hijaiyah, ditampilkan besar + suara. Bisa dipilih: **nama huruf** (alif, ba, ta…) atau **Arab asli** |
-| Belajar Sendiri | Kuis: aplikasi menyebut, anak memilih (dapat 1 bintang per jawaban benar) |
+| Kegiatan Lain → Huruf Hijaiyah | 28 huruf hijaiyah; pilihan **nama huruf** atau **bunyi Arab** (suara AI, perlu diperiksa) |
+| Kegiatan Lain → Bentuk & Warna | 6 bentuk dasar dengan warna |
+| Kegiatan Lain → Berhitung | Sentuh satu-satu gambar sambil menghitung |
+| Kegiatan Lain → Cocokkan Kartu | Memori kecil 4 pasang |
+| Kegiatan Lain → Menggambar & Latihan | Kanvas untuk mencoret/menjiplak huruf (latihan bermain, bukan penilaian tulisan) |
+| Kegiatan Lain → Tebak-tebakan | Kuis: aplikasi menyebut, anak memilih (1 bintang per jawaban benar) |
 | Rutinitas Hari Ini | 12 kartu kegiatan; selesai = 1 bintang |
-| Papan Bintang | Hitung bintang, target (bawaan 10), tombol tukar hadiah |
+| Papan Bintang | Hitung bintang, target (bawaan 10), tukar hadiah. Tombol peluk selalu tersedia tanpa bintang |
 | Daftar Hadiah | Hadiah dipilih **acak** setiap tukar bintang |
-| Pengaturan | Khusus Ayah/Ibu (dikunci soal hitung): nama, target, kegiatan, hadiah, tumbuh kembang |
+| Pengaturan (Ayah/Ibu) | Dikunci soal hitung: nama, tingkat materi, target, kegiatan, hadiah, tumbuh kembang, suara, pengingat istirahat, cadangan data |
 
-## Suara (ElevenLabs)
+## Tingkat materi (anak 3 tahun)
+- **Tingkat 1 (bawaan):** huruf 5, angka 5, hijaiyah 5 — pilihan paling sedikit.
+- Tingkat 2: huruf 10, angka 10, hijaiyah 10.
+- Tingkat 3: semua (huruf 26, angka 20, hijaiyah 28).
+
+Naikkan tingkat di Pengaturan Ayah/Ibu setelah anak nyaman. Tidak ada tekanan waktu
+dan tidak ada hukuman bila salah — hanya ajakan mencoba lagi.
+
+## Suara
 Aplikasi memakai file MP3 yang sudah jadi (folder `audio/`), jadi tetap jalan tanpa internet.
-Bila folder `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat.
-
-**135 klip** (huruf A–Z, angka 1–20, 28 hijaiyah nama + 28 hijaiyah Arab asli, 12 kegiatan,
-9 hadiah, 12 frasa pujian) — total hanya ~1.810 karakter, jadi biayanya sangat kecil.
+Bila `audio/` masih kosong, aplikasi otomatis memakai suara bawaan perangkat dan menjelaskannya
+di beranda. Volume dan tombol **bisukan** ada di Pengaturan Ayah/Ibu.
 
 Membuat file suara:
-1. Klik dua kali `tools\ISI_KUNCI_dan_BUAT_SUARA.bat` (kunci ElevenLabs dimasukkan di situ, tidak lewat chat)
-2. Berkas MP3 muncul di folder `audio\`
-3. Minta Hermes mengunggah folder `audio/` ke GitHub (agar ikut terpasang di HP)
+1. Klik dua kali `tools\ISI_KUNCI_dan_BUAT_SUARA.bat` (kunci ElevenLabs dimasukkan di situ, tidak lewat chat).
+2. Berkas MP3 muncul di folder `audio\`.
+3. Minta Hermes mengunggah folder `audio/` ke GitHub.
 
-Pilihan lain: `python tools/generate_voice.py --list` untuk melihat daftar suara,
-atau set `ELEVENLABS_VOICE_ID` untuk memilih suara tertentu.
+Catatan jujur: suara nama huruf/bunyi Arab dibuat oleh AI, bukan rekaman guru.
+Mohon diperiksa Ayah/Ibu atau guru ngaji; aplikasi ini tidak mengklaim sudah sesuai tajwid.
 
 ## Berkas
-- `index.html` — seluruh aplikasi (satu berkas)
-- `manifest.json`, `sw.js`, `icon-*.png` — supaya bisa dipasang di HP & jalan offline
-- `index_v1_backup.html` — versi pertama (cadangan)
+- `index.html` — seluruh aplikasi
+- `manifest.json`, `sw.js`, `icon-*.png` — agar bisa dipasang di HP & jalan offline
+- `tests/` — uji statis & uji runtime (Chrome headless/CDP)
+- `index_pre_redesign_backup.html` — versi sebelum tata ulang (cadangan aman)
+- `index_v1_backup.html` — versi pertama (cadangan lama)
 - `tools/generate_voice.py` — pembuat suara ElevenLabs
+- `REFERENCES.md` — sumber rujukan desain & apa yang diadaptasi
 
-## Catatan
+## Menjalankan uji
+```sh
+node tests/static.test.cjs          # 19 pemeriksaan statis
+node tools/_serve_test.cjs . 8899   # server lokal untuk uji PWA
+# lalu jalankan Chrome headless dengan --remote-debugging-port=9241
+node af_cdp_test.cjs                # 30 pemeriksaan perilaku + tangkapan layar
+```
+
+## Catatan privasi
 Data anak (bintang, rutinitas, catatan tumbuh kembang) tersimpan **di perangkat** (localStorage),
-tidak dikirim ke mana pun. Jangan hapus data browser bila tidak ingin catatan hilang.
+tidak dikirim ke mana pun. Tidak ada iklan dan tidak ada pelacak. Menghapus data browser
+berarti menghapus catatan — pakai **Pengaturan → Data & Keamanan → Simpan cadangan**.
